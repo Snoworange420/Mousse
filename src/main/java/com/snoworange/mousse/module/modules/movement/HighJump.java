@@ -48,8 +48,6 @@ public class HighJump extends Module {
                 timer = 0;
                 jumped = 0;
             }
-
-            mc.player.sendChatMessage("Timer: " + timer + "tick: " + tick + "jumped: " + jumped);
         }
     }
 }
