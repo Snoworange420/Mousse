@@ -2,7 +2,6 @@ package com.snoworange.mousse;
 
 import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.module.ModuleManager;
-import com.snoworange.mousse.module.modules.combat.Auto32kSkidHopper;
 import com.snoworange.mousse.ui.ClickGui;
 import com.snoworange.mousse.ui.Hud;
 import net.minecraft.client.Minecraft;
@@ -23,11 +22,6 @@ public class Main {
     public static ModuleManager moduleManager;
     public static Hud hud;
     public static KeyBinding ClickGUI;
-
-    //
-
-    public static boolean is32kEnabled;
-    public static int cps = 13;
 
     //
 
@@ -71,7 +65,7 @@ public class Main {
 
     @Mod.EventHandler
     public void post(FMLPostInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(new Auto32kSkidHopper());
+        
     }
 
 
