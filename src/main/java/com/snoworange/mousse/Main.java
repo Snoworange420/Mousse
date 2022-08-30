@@ -1,11 +1,16 @@
 package com.snoworange.mousse;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
+import com.snoworange.mousse.command.CommandManager;
 import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.module.ModuleManager;
 import com.snoworange.mousse.ui.ClickGui;
 import com.snoworange.mousse.ui.Hud;
+import me.zero.alpine.EventBus;
+import me.zero.alpine.EventManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -14,14 +19,23 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+
+
 @Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION)
 public class Main {
+
+    public static final Logger log = LogManager.getLogger("mousse");
+    public static final EventBus EVENT_BUS = new EventManager();
 
     public static ModuleManager moduleManager;
     public static Hud hud;
     public static KeyBinding ClickGUI;
+    public static CommandManager commandManager;
+    private ClickGui clickgui;
 
     //
 
@@ -32,10 +46,9 @@ public class Main {
     public static Minecraft mc = Minecraft.getMinecraft();
 
     //
-    private ClickGui clickgui;
-
     @Mod.Instance
     public Main instance;
+
 
     @Mod.EventHandler
     public void PreInit(FMLPreInitializationEvent event) {
@@ -51,6 +64,7 @@ public class Main {
         Display.setTitle(Main.NAME + " " + Main.VERSION);
 
         moduleManager = new ModuleManager();
+        commandManager = new CommandManager();
         hud = new Hud();
         clickgui = new ClickGui();
 
@@ -65,7 +79,7 @@ public class Main {
 
     @Mod.EventHandler
     public void post(FMLPostInitializationEvent event) {
-        
+
     }
 
 
@@ -87,6 +101,10 @@ public class Main {
                 }
             }
         } catch (Exception ex) {ex.printStackTrace();}
+    }
+
+    public static void sendMessage(String msg) {
+        Minecraft.getMinecraft().player.sendMessage(new TextComponentString( ChatFormatting.RESET + "[" + Main.NAME + "] " + msg));
     }
 
     @SubscribeEvent

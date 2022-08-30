@@ -1,7 +1,11 @@
 package com.snoworange.mousse.module;
 
+import com.snoworange.mousse.module.setting.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Module {
 
@@ -11,6 +15,7 @@ public abstract class Module {
     public boolean toggled;
 
     public int type;
+    public List<Setting> settings = new ArrayList<Setting>();
 
     public Minecraft mc = Minecraft.getMinecraft();
 
@@ -21,7 +26,6 @@ public abstract class Module {
         this.key = 0;
         this.category = category;
         this.toggled = false;
-        Minecraft mc = Minecraft.getMinecraft();
     }
 
     public String getName() {
@@ -80,9 +84,5 @@ public abstract class Module {
 
     public void onDisable() {
         MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    public void onTick() {
-
     }
 }

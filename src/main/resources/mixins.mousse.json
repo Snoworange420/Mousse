@@ -1,7 +1,7 @@
 {
   "required": true,
   "compatibilityLevel": "JAVA_8",
-  "package": "com.snoworange.mousse.mixin.mixins",
+  "package": "com.snoworange.mixin.mixins",
   "refmap": "mixins.mousse.refmap.json",
   "mixins": [
     "MixinAbstractClientPlayer"

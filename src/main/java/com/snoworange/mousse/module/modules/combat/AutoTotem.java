@@ -9,6 +9,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -34,14 +35,10 @@ public class AutoTotem extends Module {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.PlayerTickEvent event) {
+    public void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
         if (this.toggled) {
 
-            if (!mc.player.inventory.getItemStack().isEmpty()) {
-                if (mc.currentScreen instanceof GuiContainer) {
-                    return;
-                }
-            }
+            if (mc.currentScreen instanceof GuiContainer) return;
 
             totemcount = InventoryUtils.amountInInventory(Items.TOTEM_OF_UNDYING);
 
@@ -58,42 +55,24 @@ public class AutoTotem extends Module {
             }
 
             if (clickemptyslot) {
+                int index = InventoryUtils.getBlank();
 
-                int i = InventoryUtils.getBlank();
+                if (index == -1) return;
 
-                if (i == -1) {
-                    return;
-                }
-
-                mc.playerController.windowClick(0, InventoryUtils.getSlotIndex(i), 0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0, InventoryUtils.getSlotIndex(index), 0, ClickType.PICKUP, mc.player);
                 mc.playerController.updateController();
                 clickemptyslot = false;
             }
 
-            if ((mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING && mc.player.getHealth() < minhealth) || mc.player.fallDistance > 3) {
+            if (mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING && mc.player.getHealth() <= minhealth) {
 
-                int ei = InventoryUtils.getHotbarBlank();
+                if (totemcount == 0) return;
 
-                if (ei == -1) {
-                    return;
-                }
+                int index = InventoryUtils.findItem(Items.TOTEM_OF_UNDYING);
 
-                if (!mc.player.getHeldItemOffhand().isEmpty()) {
-                    mc.playerController.windowClick(0,45, 0, ClickType.PICKUP, mc.player);
-                    mc.playerController.updateController();
-                }
+                if (index == -1) return;
 
-                if (totemcount <= 0) {
-                    return;
-                }
-
-                int i = InventoryUtils.findItem(Items.TOTEM_OF_UNDYING);
-
-                if (i == -1) {
-                    return;
-                }
-
-                mc.playerController.windowClick(0, InventoryUtils.getSlotIndex(i), 0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0, InventoryUtils.getSlotIndex(index), 0, ClickType.PICKUP, mc.player);
                 mc.playerController.updateController();
                 move = true;
             }

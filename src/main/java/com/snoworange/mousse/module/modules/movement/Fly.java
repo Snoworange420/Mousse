@@ -40,7 +40,6 @@ public class Fly extends Module {
     @SubscribeEvent
     public void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
         if (this.toggled && event.getEntityLiving() instanceof EntityPlayer) {
-
             if (velocity) {
                 mc.player.setVelocity(0.0, 0.0, 0.0);
                 GravityUtils.moveEntityWithSpeed(mc.player, speed, true);
