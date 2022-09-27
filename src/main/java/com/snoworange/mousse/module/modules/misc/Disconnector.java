@@ -13,9 +13,16 @@ public class Disconnector extends Module {
 
     @Override
     public void onEnable() {
-        super.onEnable();
+
         mc.world.sendQuittingDisconnectingPacket();
         mc.player.connection.onDisconnect(new TextComponentString("Disconnecting!"));
-        this.setToggled(false);
+
+        this.onDisable();
+        this.toggled = false;
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
     }
 }

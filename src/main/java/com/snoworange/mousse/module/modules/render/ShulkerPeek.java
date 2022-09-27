@@ -20,6 +20,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ShulkerPeek extends Module {
 
@@ -75,11 +77,10 @@ public class ShulkerPeek extends Module {
                     mc.displayGuiScreen((GuiScreen) new GuiChest((IInventory) mc.player.inventory, (IInventory) new InventoryBasic("Shulker Box", true, 27)));
                 }
 
-                mc.world.playSound(null, mc.player.posX, mc.player.posY, mc.player.posZ, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 1f, 1f);
+                mc.world.playSound(mc.player, mc.player.posX, mc.player.posY, mc.player.posZ, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5f, 1.0f);
 
                 return;
             }
-            Main.sendMessage("You are not holding a shulker box!");
         }
     }
 
@@ -88,4 +89,10 @@ public class ShulkerPeek extends Module {
         super.onDisable();
     }
 
+    @SubscribeEvent
+    public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+        if (this.toggled) {
+            disable();
+        }
+    }
 }

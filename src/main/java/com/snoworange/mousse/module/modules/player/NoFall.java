@@ -28,7 +28,10 @@ public class NoFall extends Module {
     @SubscribeEvent
     public void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
         if (this.toggled && event.getEntityLiving() instanceof EntityPlayer) {
-            if (mc.player.fallDistance > 2) {
+
+            if (mc.world == null || mc.player == null) return;
+
+            if (mc.player.fallDistance > 3) {
                 mc.player.connection.sendPacket(new CPacketPlayer(true));
             }
         }

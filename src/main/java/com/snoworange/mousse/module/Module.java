@@ -1,10 +1,14 @@
 package com.snoworange.mousse.module;
 
-import com.snoworange.mousse.module.setting.Setting;
+import com.snoworange.mousse.event.Event;
+import com.snoworange.mousse.setting.Setting;
+import com.snoworange.mousse.setting.settings.KeyBindSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class Module {
@@ -84,5 +88,15 @@ public abstract class Module {
 
     public void onDisable() {
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    public void enable() {
+        this.onEnable();
+        this.toggled = true;
+    }
+
+    public void disable() {
+        this.onDisable();
+        this.toggled = false;
     }
 }

@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class Fly extends Module {
 
     public Fly() {
-        super("Fly", "Prevents getting fall damage by sending packets", Category.MOVEMENT, 0);
+        super("Fly", "Allows you to fly like a bird", Category.MOVEMENT, 0);
     }
 
     float speed = 1f;

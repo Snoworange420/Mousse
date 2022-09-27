@@ -6,6 +6,8 @@ import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.module.ModuleManager;
 import com.snoworange.mousse.ui.ClickGui;
 import com.snoworange.mousse.ui.Hud;
+import com.snoworange.mousse.ui.theme.ThemeManager;
+import com.snoworange.mousse.util.JColor;
 import me.zero.alpine.EventBus;
 import me.zero.alpine.EventManager;
 import net.minecraft.client.Minecraft;
@@ -30,12 +32,15 @@ public class Main {
 
     public static final Logger log = LogManager.getLogger("mousse");
     public static final EventBus EVENT_BUS = new EventManager();
+    public static ThemeManager themeManager = new ThemeManager();
 
     public static ModuleManager moduleManager;
+
     public static Hud hud;
     public static KeyBinding ClickGUI;
     public static CommandManager commandManager;
     private ClickGui clickgui;
+    //public ClickGui clickGui;
 
     //
 
@@ -44,6 +49,8 @@ public class Main {
     public static final String VERSION = "v0.1";
 
     public static Minecraft mc = Minecraft.getMinecraft();
+
+    public static final JColor MOUSSE_COLOR = new JColor(131, 141, 59);
 
     //
     @Mod.Instance
@@ -104,6 +111,9 @@ public class Main {
     }
 
     public static void sendMessage(String msg) {
+
+        if (Minecraft.getMinecraft().world == null || Minecraft.getMinecraft().player == null) return;
+
         Minecraft.getMinecraft().player.sendMessage(new TextComponentString( ChatFormatting.RESET + "[" + Main.NAME + "] " + msg));
     }
 

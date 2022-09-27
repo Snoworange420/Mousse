@@ -2,15 +2,14 @@ package com.snoworange.mousse.module;
 
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.modules.combat.*;
-import com.snoworange.mousse.module.modules.exploit.PacketGodmode;
 import com.snoworange.mousse.module.modules.misc.*;
 import com.snoworange.mousse.module.modules.movement.*;
 import com.snoworange.mousse.module.modules.player.Capes;
 import com.snoworange.mousse.module.modules.player.NoFall;
+import com.snoworange.mousse.module.modules.movement.Scaffold;
 import com.snoworange.mousse.module.modules.render.ShulkerPeek;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ModuleManager {
 
@@ -21,21 +20,24 @@ public class ModuleManager {
 
         //COMBAT
 
-        //modules.add(new Auto32k());
-        modules.add(new TickAura());
-        modules.add(new AutoTotem());
+        modules.add(new Auto32k());
+        modules.add(new Dispenser32k());
+        modules.add(new Surround());
+        modules.add(new AutoXP());
+        //modules.add(new AutoTotem());
 
         //EXPLOIT
-        modules.add(new PacketGodmode());
+
 
         //JOKES
 
         //MOVEMENT
         //modules.add(new PacketShift());
         modules.add(new EntityFly());
-        modules.add(new AirJump());
-        modules.add(new Fly());
+        //modules.add(new AirJump());
+        //modules.add(new Fly());
         modules.add(new WaterSpeed());
+        modules.add(new Scaffold());
 
         //PLAYER
         modules.add(new NoFall());

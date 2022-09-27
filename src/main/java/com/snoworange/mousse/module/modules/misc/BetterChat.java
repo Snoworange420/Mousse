@@ -34,7 +34,7 @@ public class BetterChat extends Module {
     @SubscribeEvent
     public void onChat(final ClientChatEvent event) {
 
-        for (final String s : Arrays.asList("/", ".", "-", ",", ":", ";", "'", "\"", "+", "@", "#", "&")) {
+        for (final String s : Arrays.asList("/", ".", "-", ",", ":", ";", "'", "\"", "+", "@", "#", "&", "_")) {
             if (event.getMessage().startsWith(s)) return;
         }
 

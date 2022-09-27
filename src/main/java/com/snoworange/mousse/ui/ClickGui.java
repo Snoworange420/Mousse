@@ -47,7 +47,7 @@ public class ClickGui extends GuiScreen {
         drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        mc.fontRenderer.drawString("Mousse Client by Jonakip & Snoworange" ,0, 5, -1);
+        mc.fontRenderer.drawString("Mousse Client by Jonakip, Snoworange & Huub" ,0, 5, -1);
 
         if (dragging) {
             posX = mouseX - dragX;

@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class WaterSpeed extends Module {
 
-    private float speed = 1.0f;
+    private float speed = 0.29f;
 
     public WaterSpeed() {
         super("WaterSpeed", "Bypasses liquid movement speed in some NCP servers", Category.MOVEMENT, 0);

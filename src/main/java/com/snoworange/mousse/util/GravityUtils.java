@@ -31,7 +31,7 @@ public class GravityUtils {
         if (shouldMoveY) {
             if (mc.gameSettings.keyBindJump.isKeyDown()) {
                 entity.motionY = speed;
-            } else if(mc.gameSettings.keyBindSneak.isKeyDown()) {
+            } else if (mc.gameSettings.keyBindSneak.isKeyDown()) {
                 entity.motionY = -speed;
             }
         }

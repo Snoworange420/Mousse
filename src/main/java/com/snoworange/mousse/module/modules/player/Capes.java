@@ -20,7 +20,7 @@ public class Capes extends Module {
     private static Capes instance;
     public static final ResourceLocation JONAKIP_CAPE = new ResourceLocation("assets/textures/CapeJonakip.png");
     public static final ResourceLocation SNOWORANGE_CAPE = new ResourceLocation("assets/textures/CapeSnoworange.png");
-    public static final ResourceLocation MOUSSE_CAPE = new ResourceLocation("assets/textures/CapeMousse.png");
+    public static final ResourceLocation MOUSSE_CAPE = new ResourceLocation("assets/minecraft/textures/CapeMousse.png");
 
     @Override
     public void onEnable() {
@@ -52,9 +52,9 @@ public class Capes extends Module {
                 }
 
                 if (!player.getUniqueID().toString().equals(uuid)) continue;
-                //return MOUSSE_CAPE;
+                return MOUSSE_CAPE;
                 //up is correct, but for testing we return SNOWORANGE_CAPE (minecon2011 lol)
-                return SNOWORANGE_CAPE;
+                //return SNOWORANGE_CAPE;
             }
         }
         return null;
