@@ -348,6 +348,7 @@ public class Dispenser32k extends Module {
         this.hasPlacedStuff = true;
     }
 
+    /*
     public void placeHopper(int hopperIndex, BlockPos hopperPos, EnumFacing enumFacing, Vec3d vec3d) {
 
         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
@@ -393,4 +394,5 @@ public class Dispenser32k extends Module {
 
        this.hasPlacedStuff = true;
     }
+    */
 }
