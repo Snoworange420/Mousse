@@ -11,131 +11,34 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
-        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3.4'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
+apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 version = '1.0'
 group = 'com.snoworange.mousse' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'mousse'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 minecraft {
-    // The mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   Snapshot are built nightly.
-    // stable_#            Stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // Simply re-run your setup task after changing the mappings to update your workspace.
-    //mappings channel: 'snapshot', version: '20171003-1.12'
-    mappings channel: 'snapshot', version: '20171003-1.12'
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-        }
-
-        server {
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-        }
-    }
-}
-
-dependencies {
-    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
-    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
-    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2859'
-
-    // You may put jars on which you depend on in ./libs or you may define them like so..
-    // compile "some.group:artifact:version:classifier"
-    // compile "some.group:artifact:version"
-
-    // Real examples
-    // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    // compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // The 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    // provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // These dependencies get remapped to your current MCP mappings
-    // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // For more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
-    compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {
-        exclude module: 'launchwrapper'
-        exclude module: 'guava'
-        exclude module: 'gson'
-        exclude module: 'commons-io'
-    }
-
-    compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
-    compile "com.github.ZeroMemes:Alpine:1.5"
-    compile("com.lukflug:panelstudio:0.1.8")
-    compile("com.lukflug:panelstudio-mc12:0.1.8")
-
-}
-
-
-
-shadowJar {
-    dependencies {
-        // event
-        include(dependency('com.github.ZeroMemes:Alpine'))
-        // rpc
-        include(dependency('club.minnced:java-discord-rpc:2.0.1'))
-        //stuff
-        include(dependency('com.lukflug:panelstudio'))
-        include(dependency('com.lukflug:panelstudio-mc12'))
-    }
-}
-
-// Example for how to get properties into the manifest for reading by the runtime..
-jar {
-    manifest {
-        attributes([
-                "Specification-Title": "examplemod",
-                "Specification-Vendor": "examplemodsareus",
-                "Specification-Version": "1", // We are version 1 of ourselves
-                "Implementation-Title": project.name,
-                "Implementation-Version": "${version}",
-                "Implementation-Vendor" :"examplemodsareus",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
+    version = project.forgeVersion
+    mappings = project.mcpVersion
 }
 
 repositories {
+    mavenCentral()
+    //for baritone
     maven {
-        name = 'spongepowered-repo'
-        url = 'https://repo.spongepowered.org/repository/maven-public/'
+        name = 'impactdevelopment-repo'
+        url = 'https://impactdevelopment.github.io/maven/'
     }
     maven {
         name = 'swt-repo'
@@ -151,21 +54,77 @@ repositories {
     }
 }
 
-// Example configuration to allow publishing using the maven-publish task 
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-//publish.dependsOn('reobfJar')
+dependencies {
+    compile "com.github.ZeroMemes:Alpine:1.5"
+    compile group: 'net.jodah', name: 'typetools', version: '0.5.0'
+    compile group: "com.googlecode.json-simple", name: "json-simple", version: "1.1.1"
+    compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
+    compile 'com.github.cabaletta:baritone:1.2.14'
+    compile("com.lukflug:panelstudio:0.1.8")
+    compile("com.lukflug:panelstudio-mc12:0.1.8")
+}
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-        }
+processResources {
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
-        }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+    rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+shadowJar {
+    dependencies {
+        // mixin
+        include(dependency('org.spongepowered:mixin'))
+
+        // event
+        include(dependency('com.github.ZeroMemes:Alpine'))
+
+        // dependencies
+        include(dependency('net.jodah:typetools'))
+        include(dependency('com.googlecode.json-simple:json-simple:1.1.1'))
+
+        // rpc
+        include(dependency('club.minnced:java-discord-rpc:2.0.1'))
+
+
+        // baritone
+        include(dependency('com.github.cabaletta:baritone:1.2.14'))
+        include(dependency('cabaletta:baritone-api'))
+
+        // panelstudio
+        include(dependency('com.lukflug:panelstudio'))
+        include(dependency('com.lukflug:panelstudio-mc12'))
+    }
+    exclude 'dummyThing', 'LICENSE.txt', 'org/**/*.html', 'META-INF/maven/**' // Removes unneeded files that are legit just useless text files - Perry on reborn
+    classifier = 'release'
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+        classpath = sourceSets.main.compileClasspath
     }
 }
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title": "examplemod",
+                "Specification-Vendor": "examplemodsareus",
+                "Specification-Version": "1", // We are version 1 of ourselves
+                "Implementation-Title": project.name,
+                "Implementation-Version": "${version}",
+                "Implementation-Vendor" :"examplemodsareus",
+                //"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+build.dependsOn(shadowJar)
