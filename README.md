@@ -17,5 +17,5 @@ Most of the code is skidded/copyed from open-source clients. The client developi
 *I recommend to not use this client as a instance!!1!*
 
 # Credits
-nk2ywsa / sheplet for inspiration to make this client
-SrgantMooMoo for the tutorial and stuff
+- nk2ywsa / sheplet for inspiration to make this client
+- SrgantMooMoo for the tutorial and stuff
