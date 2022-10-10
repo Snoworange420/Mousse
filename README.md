@@ -11,6 +11,11 @@ Everything that is skidded for now:
 - WWE's Hopper32k
 - Utils
 - Commands and base from postman
+
 # Comment
-Most of the code is skidded/copyed from open-source clients, its still in progress. (bad client lol, i am new to coding)
+Most of the code is skidded/copyed from open-source clients. The client developing is in progress.
 *I recommend to not use this client as a instance!!1!*
+
+# Credits
+nk2ywsa / sheplet for inspiration to make this client
+SrgantMooMoo for the tutorial and stuff
