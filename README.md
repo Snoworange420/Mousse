@@ -13,7 +13,7 @@ How do I...
 <details>
   <summary>... open the ClickGUI?</summary>
 
-> The default keybind is not set. You can set the keybind in the game keybind setting menu.
+> The default keybind is not set. You can set the keybind in the Minecraft ingame keybind setting menu.
 
 </details>
 
