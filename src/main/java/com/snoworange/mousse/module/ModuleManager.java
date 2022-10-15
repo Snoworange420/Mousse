@@ -48,6 +48,7 @@ public class ModuleManager {
         modules.add(new AutoSwing());
         modules.add(new BetterChat());
         modules.add(new DiscordRPC());
+        modules.add(new Announcer());
 
         //RENDER
         modules.add(new ShulkerPeek());
