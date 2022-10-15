@@ -112,8 +112,28 @@ public class Dispenser32k extends Module {
             }
 
             if (!this.hasPlacedStuff && (hopperIndex == -1 || shulkerIndex == -1 || dispenserIndex == -1 || obsidianIndex == -1 || redstoneIndex == -1)) {
+
+                if (hopperIndex == -1) {
+                    Main.sendMessage("Missing hopper in your hotbar!");
+                }
+
+                if (shulkerIndex == -1) {
+                    Main.sendMessage("Missing shulker box in your hotbar!");
+                }
+
+                if (dispenserIndex == -1) {
+                    Main.sendMessage("Missing dispenser in your hotbar!");
+                }
+
+                if (obsidianIndex == -1) {
+                    Main.sendMessage("Missing obsidian in your hotbar!");
+                }
+
+                if (redstoneIndex == -1) {
+                    Main.sendMessage("Missing redstone block in your hotbar!");
+                }
+
                 disable();
-                Main.sendMessage("Blocks not found in your hotbar!");
                 return;
             }
 
