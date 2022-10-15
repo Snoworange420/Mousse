@@ -28,7 +28,7 @@ How do I...
 Everything that is skidded for now:
 - WWE's Hopper32k
 - Utils
-- Commands and base from postman
+- Commands from postman
 
 ## Comment
 Most of the code is skidded/copyed from open-source clients. The client developing is in progress.
