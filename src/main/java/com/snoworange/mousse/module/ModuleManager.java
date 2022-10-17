@@ -2,16 +2,20 @@ package com.snoworange.mousse.module;
 
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.modules.combat.*;
+import com.snoworange.mousse.module.modules.exploit.SecretClose;
 import com.snoworange.mousse.module.modules.misc.*;
 import com.snoworange.mousse.module.modules.movement.*;
 import com.snoworange.mousse.module.modules.player.Capes;
 import com.snoworange.mousse.module.modules.player.NoFall;
 import com.snoworange.mousse.module.modules.movement.Scaffold;
 import com.snoworange.mousse.module.modules.render.ShulkerPeek;
+import com.snoworange.mousse.module.modules.render.Test3DRenderer;
 
 import java.util.*;
 
 public class ModuleManager {
+
+    public static ModuleManager instance;
 
     public ArrayList<Module> modules;
 
@@ -27,7 +31,7 @@ public class ModuleManager {
         //modules.add(new AutoTotem());
 
         //EXPLOIT
-
+        modules.add(new SecretClose());
 
         //JOKES
 
@@ -48,6 +52,7 @@ public class ModuleManager {
         modules.add(new AutoSwing());
         modules.add(new BetterChat());
         modules.add(new DiscordRPC());
+        modules.add(new Test3DRenderer());
         modules.add(new Announcer());
 
         //RENDER
@@ -55,12 +60,19 @@ public class ModuleManager {
 
         //WORK IN PROGRESS
 
-        //
+        instance = this;
     }
 
-    public Module getModule (String name) {
-        for(Module m : this.modules) {
-            if(m.getName().equalsIgnoreCase(name)) {
+    public static ModuleManager getInstance() {
+        if (instance == null) {
+            instance = new ModuleManager();
+        }
+        return instance;
+    }
+
+    public Module getModule(String name) {
+        for (Module m : this.modules) {
+            if (m.getName().equalsIgnoreCase(name)) {
                 return m;
             }
         }

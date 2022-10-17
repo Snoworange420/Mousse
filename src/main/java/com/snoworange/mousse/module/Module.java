@@ -1,14 +1,12 @@
 package com.snoworange.mousse.module;
 
-import com.snoworange.mousse.event.Event;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import com.snoworange.mousse.Main;
 import com.snoworange.mousse.setting.Setting;
-import com.snoworange.mousse.setting.settings.KeyBindSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 public abstract class Module {
@@ -84,11 +82,18 @@ public abstract class Module {
 
     public void onEnable() {
         MinecraftForge.EVENT_BUS.register(this);
+        if (Main.moduleManager.getModule("Announcer").isToggled()) {
+            Main.sendMessage(this.name + ChatFormatting.GREEN + " enabled." + ChatFormatting.RESET);
+        }
     }
 
     public void onDisable() {
         MinecraftForge.EVENT_BUS.register(this);
+        if (Main.moduleManager.getModule("Announcer").isToggled()) {
+            Main.sendMessage(this.name + ChatFormatting.RED + " disabled." + ChatFormatting.RESET);
+        }
     }
+
 
     public void enable() {
         this.onEnable();
