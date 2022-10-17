@@ -52,7 +52,6 @@ public class ModuleManager {
         modules.add(new AutoSwing());
         modules.add(new BetterChat());
         modules.add(new DiscordRPC());
-        modules.add(new Test3DRenderer());
         modules.add(new Announcer());
 
         //RENDER
