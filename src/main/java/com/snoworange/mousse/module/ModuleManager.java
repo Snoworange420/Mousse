@@ -31,7 +31,7 @@ public class ModuleManager {
         //modules.add(new AutoTotem());
 
         //EXPLOIT
-        modules.add(new SecretClose());
+        //modules.add(new SecretClose());
 
         //JOKES
 
