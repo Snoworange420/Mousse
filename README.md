@@ -5,6 +5,8 @@ An advanced utility mod, aimed at use in Minecraft 1.12.2 anarchy servers.
 ![minecraft](https://img.shields.io/badge/Keybind-none-pink)
 ![Lines of code](https://img.shields.io/tokei/lines/github/Snoworange420/Mousse?color=lightcoral&label=Lines%20of%20code)
 [![discord](https://img.shields.io/badge/Discord-Invite-8080c0)](https://discord.gg/Xp4ZZy9Ah3)
+![Github last commit]("https://img.shields.io/github/last-commit/Snoworange420/Mousse")
+![Github code size in bites]("https://img.shields.io/github/languages/code-size/Snoworange420/Mousse")
 
 ## FAQ
 
