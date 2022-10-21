@@ -52,9 +52,11 @@ public class ClickGui extends GuiScreen {
 
         mc.fontRenderer.drawString("Mousse Client by Jonakip, Snoworange & Huub" ,0, 5, -1);
 
+        /*
         mc.fontRenderer.drawString("PosX, PosY: " + posX + " " + posY, 100, 100, -1);
         mc.fontRenderer.drawString("MouseX, MouseY: " + mouseX + " " + mouseY, 100, 115, -1);
         mc.fontRenderer.drawString("PosX2, PosY2: " + posX2 + " " + posY2, 100, 135, -1);
+        */
 
         if (dragging) {
             posX = mouseX - dragX;
