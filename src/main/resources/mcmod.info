@@ -1,0 +1,16 @@
+[
+{
+  "modid": "mousse",
+  "name": "Mousse",
+  "description": "Advanced utility mod for Minecraft 1.12.2",
+  "version": "0.4",
+  "mcversion": "1.12.2",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Jonakip", "Snow_orange__", "Huub"],
+  "credits": "I will give credits to your mom",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
