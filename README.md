@@ -36,6 +36,7 @@ Most of the code is skidded/copyed from open-source clients. The client developi
 
 ## Credits
 - Minecraft and MinecraftForge (without those boiz we can't make client)
+- Pseudonymous000 for helping me out with client developing
 - Minnced for DiscordRPC
 - SpongePowored for mixins (I can't use it lol)
 - nk2ywsa / sheplet for inspiration to make this client
