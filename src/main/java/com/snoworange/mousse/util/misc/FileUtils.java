@@ -3,6 +3,7 @@ package com.snoworange.mousse.util.misc;
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.module.ModuleManager;
+import com.snoworange.mousse.setting.Setting;
 import com.snoworange.mousse.setting.settings.BooleanSetting;
 import com.snoworange.mousse.setting.settings.KeyBindSetting;
 import com.snoworange.mousse.setting.settings.ModeSetting;
@@ -21,13 +22,13 @@ public class FileUtils {
     public static void saveAll() {
         saveActiveModules(mousse);
         saveBinds(mousse);
-        saveModuleSetting(mousse);
+        saveSettings(mousse);
     }
 
     public static void loadAll() {
         loadActiveModules(mousse);
         loadBinds(mousse);
-        loadModuleSetting(mousse);
+        loadSettings(mousse);
     }
 
     public static void createDirectory() {
@@ -137,103 +138,65 @@ public class FileUtils {
         ex.printStackTrace();
     }
 
-    public static void saveModuleSetting(final File directory) {
-
-        File setting = config;
-
-        if(!directory.exists()){
-            directory.mkdir();
-        }
-        if(!setting.exists()){
-            setting.mkdir();
-        }
-
-        try{
-            for (Module m : Main.moduleManager.getModuleList()){
-                File module = new File(setting, m.getName());
-                if (!module.exists()) {
-                    module.createNewFile();
+    public static void saveSettings(final File file) {
+        Exception ex;
+        try {
+            final File settings = new File(file.getAbsolutePath(), "Settings.txt");
+            final BufferedWriter bw = new BufferedWriter(new FileWriter(settings));
+            for (final Module m : ModuleManager.instance.getModuleList()) {
+                bw.write(m.getName() + ":");
+                for (final Setting<?> s : m.settings) {
+                    bw.write(s.name + "-" + s.value + ":");
                 }
-
-                PrintWriter pw = new PrintWriter(module);
-
-                final String[] str = {""};
-
-                str[0] += m.isToggled()?"1":"0";
-                str[0] += "\n";
-
-                m.settings.forEach(s -> {
-                    if(s instanceof KeyBindSetting){
-                        str[0] += "0"+String.valueOf(((KeyBindSetting) s).getKeyCode());
-                    }
-                    if(s instanceof BooleanSetting){
-                        str[0] += ((BooleanSetting)s).isEnable()?"11":"10";
-                    }
-                    if(s instanceof ModeSetting){
-                        str[0] += "2"+ ((ModeSetting) s).index;
-                    }
-                    if(s instanceof NumberSetting){
-                        str[0] += "3"+ String.valueOf(((NumberSetting) s).value);
-                    }
-                    str[0] += "\n";
-                });
-
-                pw.print(str[0]);
-                pw.close();
+                bw.write("\r\n");
             }
-        }catch (IOException e){
-
+            bw.close();
+            return;
         }
+        catch (Exception e) {
+            ex = e;
+        }
+        ex.printStackTrace();
     }
 
-    public static void loadModuleSetting(final File directory) {
-
-        File setting = config;
-
-        if (setting.isDirectory()){
-            for (Module m : Main.moduleManager.getModuleList()) {
-                File SettingFile = new File(setting, m.getName());
-                try {
-                    FileReader filereader = new FileReader(SettingFile);
-                    int ch;
-                    String str = "";
-                    while((ch = filereader.read()) != -1){
-                        str += String.valueOf((char)ch);
-                    }
-                    int i = 0;
-                    for (String val : Arrays.asList(str.split("\n"))) {
-                        if(i == 0) {
-                            //m.setToggled(val.equals("1")?true:false);
-                            System.out.println("Balls");
-                        }else {
-
-                            String dat = val.substring(1);
-                            if (val.startsWith("0")) {
-                                KeyBindSetting bind = (KeyBindSetting)m.settings.get(i-1);
-                                bind.keyCode = Integer.parseInt(dat);
-                            }
-                            if (val.startsWith("1")) {
-                                BooleanSetting bind = (BooleanSetting)m.settings.get(i-1);
-                                bind.setEnable(val.equals("1"));
-                            }
-                            if (val.startsWith("2")) {
-                                ModeSetting bind = (ModeSetting)m.settings.get(i-1);
-                                bind.index = Integer.parseInt(dat);
-                            }
-                            if (val.startsWith("3")) {
-                                NumberSetting bind = (NumberSetting)m.settings.get(i-1);
-                                bind.value = Double.parseDouble(dat);
-                            }
+    public static void loadSettings(final File file) {
+        Exception ex;
+        try {
+            final File settings = new File(file.getAbsolutePath(), "Settings.txt");
+            if (!settings.exists()) {
+                settings.createNewFile();
+                return;
+            }
+            final BufferedReader br = new BufferedReader(new FileReader(settings));
+            final List<String> linezz = Files.readAllLines(settings.toPath());
+            for (final String line : linezz) {
+                final String[] regex = line.split(":");
+                for (final Module m : ModuleManager.instance.getModuleList()) {
+                    for (int i = 1; i < regex.length; ++i) {
+                        final String term = regex[i];
+                        final String[] pair = term.split("-");
+                        final Setting<?> s = (Setting<?>) m.settings;
+                        if (s instanceof BooleanSetting) {
+                            final BooleanSetting sb = (BooleanSetting) s;
+                            sb.setEnable(Boolean.parseBoolean(pair[1]));
                         }
-                        i++;
+                        if (s instanceof NumberSetting) {
+                            final NumberSetting sd = (NumberSetting) s;
+                            sd.setValue(Double.parseDouble(pair[1]));
+                        }
+                        if (s instanceof ModeSetting) {
+                            final ModeSetting sm = (ModeSetting) s;
+                            sm.is(pair[1]);
+                        }
                     }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException | ClassCastException | StringIndexOutOfBoundsException e) {
-                    e.printStackTrace();
-                    SettingFile.delete();
                 }
             }
+            br.close();
+            return;
         }
+        catch (Exception e) {
+            ex = e;
+        }
+        ex.printStackTrace();
     }
 }

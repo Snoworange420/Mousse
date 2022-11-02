@@ -47,6 +47,7 @@ public class Dispenser32k extends Module {
     public BlockPos oldHopperPos;
     public BlockPos closestHopperPos = null;
     public EnumFacing dispenserDirection;
+    public boolean prepareFastHopper;
     public double wallHeight;
     public double radius;
     public double heightValue = 1.0;
@@ -61,11 +62,14 @@ public class Dispenser32k extends Module {
     }
 
     BooleanSetting autoClose;
+    BooleanSetting fastHopper;
     NumberSetting redstoneDelay;
     BooleanSetting allowVertical;
     BooleanSetting renderCircle;
     BooleanSetting silentSwap;
     ModeSetting speed;
+    BooleanSetting autoDisable;
+    BooleanSetting blockShulker;
 
 
     @Override
@@ -74,12 +78,15 @@ public class Dispenser32k extends Module {
 
         autoClose = new BooleanSetting("Auto Close", true);
         redstoneDelay = new NumberSetting("Redstone Place Delay", null, 0, 0, 20, 1);
+        fastHopper = new BooleanSetting("Fast Hopper Place", true);
         allowVertical = new BooleanSetting("Allow Vertical Place", true);
         renderCircle = new BooleanSetting("Render Hopper Radius", true);
         silentSwap = new BooleanSetting("Silent Swap", true);
-        speed = new ModeSetting("Speed", "Normal", "Normal", "Fast", "Insane");
+        speed = new ModeSetting("Speed", "Safe", "Safe", "2-Tick");
+        autoDisable = new BooleanSetting("Auto Disable", true);
+        blockShulker = new BooleanSetting("Block Shulker", false);
 
-        addSetting(autoClose, redstoneDelay, allowVertical, renderCircle, silentSwap, speed);
+        addSetting(autoClose, redstoneDelay, fastHopper, allowVertical, renderCircle, silentSwap, speed, autoDisable);
     }
 
     @Override
@@ -96,6 +103,7 @@ public class Dispenser32k extends Module {
         placedHopper = false;
         disableRadius = false;
         clickedHopper = false;
+        prepareFastHopper = false;
 
         rstick = 0;
     }
@@ -148,10 +156,6 @@ public class Dispenser32k extends Module {
                     shulkerIndex = i;
                 }
 
-                if (itemStack.getItem() instanceof ItemAir) {
-                    airIndex = i;
-                }
-
                 if (itemStack.getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, itemStack) >= Short.MAX_VALUE) {
                     enchantedSwordIndex = i;
                 }
@@ -201,6 +205,8 @@ public class Dispenser32k extends Module {
                         emptyDispenserDirectionBlock = blockPos.north();
                         dispenserDirection = EnumFacing.SOUTH;
 
+                        closestHopperPos = emptyDispenserDirectionBlock;
+
                         //redstone stuff
                         if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir && !blockPos.up().north().equals(emptyDispenserDirectionBlock.up())) {
                             redstonePos = blockPos.up().north();
@@ -224,6 +230,8 @@ public class Dispenser32k extends Module {
 
                         emptyDispenserDirectionBlock = blockPos.east();
                         dispenserDirection = EnumFacing.WEST;
+
+                        closestHopperPos = emptyDispenserDirectionBlock;
 
                         //redstone stuff
                         if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir && !blockPos.up().north().equals(emptyDispenserDirectionBlock.up())) {
@@ -249,6 +257,8 @@ public class Dispenser32k extends Module {
                         emptyDispenserDirectionBlock = blockPos.south();
                         dispenserDirection = EnumFacing.NORTH;
 
+                        closestHopperPos = emptyDispenserDirectionBlock;
+
                         //redstone stuff
                         if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir && !blockPos.up().north().equals(emptyDispenserDirectionBlock.up())) {
                             redstonePos = blockPos.up().north();
@@ -272,6 +282,8 @@ public class Dispenser32k extends Module {
 
                         emptyDispenserDirectionBlock = blockPos.west();
                         dispenserDirection = EnumFacing.EAST;
+
+                        closestHopperPos = emptyDispenserDirectionBlock;
 
                         //redstone stuff
                         if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir && !blockPos.up().north().equals(emptyDispenserDirectionBlock.up())) {
@@ -304,6 +316,8 @@ public class Dispenser32k extends Module {
 
                                 dispenserDirection = EnumFacing.DOWN;
 
+                                closestHopperPos = blockPos.down(2);
+
                                 //redstone stuff
                                 if (mc.world.getBlockState(blockPos.north()).getBlock() instanceof BlockAir) {
                                     redstonePos = blockPos.north();
@@ -335,6 +349,8 @@ public class Dispenser32k extends Module {
                                 emptyDispenserDirectionBlock = blockPos.north();
                                 dispenserDirection = EnumFacing.SOUTH;
 
+                                closestHopperPos = emptyDispenserDirectionBlock;
+
                                 //redstone stuff
                                 if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir && !blockPos.up().north().equals(emptyDispenserDirectionBlock.up())) {
                                     redstonePos = blockPos.up().north();
@@ -358,6 +374,8 @@ public class Dispenser32k extends Module {
 
                                 emptyDispenserDirectionBlock = blockPos.east();
                                 dispenserDirection = EnumFacing.WEST;
+
+                                closestHopperPos = emptyDispenserDirectionBlock;
 
                                 //redstone stuff
                                 if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir && !blockPos.up().north().equals(emptyDispenserDirectionBlock.up())) {
@@ -383,6 +401,8 @@ public class Dispenser32k extends Module {
                                 emptyDispenserDirectionBlock = blockPos.south();
                                 dispenserDirection = EnumFacing.NORTH;
 
+                                closestHopperPos = emptyDispenserDirectionBlock;
+
                                 //redstone stuff
                                 if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir && !blockPos.up().north().equals(emptyDispenserDirectionBlock.up())) {
                                     redstonePos = blockPos.up().north();
@@ -406,6 +426,8 @@ public class Dispenser32k extends Module {
 
                                 emptyDispenserDirectionBlock = blockPos.west();
                                 dispenserDirection = EnumFacing.EAST;
+
+                                closestHopperPos = emptyDispenserDirectionBlock;
 
                                 //redstone stuff
                                 if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir && !blockPos.up().north().equals(emptyDispenserDirectionBlock.up())) {
@@ -434,126 +456,61 @@ public class Dispenser32k extends Module {
                 }
             }
 
-            //Swap 32k
-            if (enchantedSwordIndex == -1 && mc.player.openContainer != null && mc.player.openContainer instanceof ContainerHopper && mc.player.openContainer.inventorySlots != null && !mc.player.openContainer.inventorySlots.isEmpty()) {
-                for (int i = 0; i < 5; i++) {
-                    if (mc.player.openContainer.inventorySlots.get(0).inventory.getStackInSlot(i).getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, mc.player.openContainer.inventorySlots.get(0).inventory.getStackInSlot(i)) >= Short.MAX_VALUE) {
-                        enchantedSwordIndex = i;
-                        break;
-                    }
-                }
-
-                if (enchantedSwordIndex == -1) {
-                    return;
-                }
-
-                for (int i = 0; i < 9; i++) {
-                    ItemStack itemStack = mc.player.inventory.mainInventory.get(i);
-                    if (itemStack.getItem() instanceof ItemAir) {
-                        if (mc.player.inventory.currentItem != i) {
-                            mc.player.connection.sendPacket(new CPacketHeldItemChange(i));
-                            mc.player.inventory.currentItem = i;
-                            mc.playerController.updateController();
-                        }
-                        break;
-                    }
-                }
-
-                mc.playerController.windowClick(mc.player.openContainer.windowId, enchantedSwordIndex, mc.player.inventory.currentItem, ClickType.SWAP, mc.player);
-                Main.sendMessage("32k found in slot " + enchantedSwordIndex);
-
-                if (autoClose.enable) {
-                    mc.player.closeScreen();
-                }
-            }
-
             // Shulker box swapping
             if (!swappedShulker && !placedHopper) {
+
                 if (mc.player.openContainer != null && mc.player.openContainer instanceof ContainerDispenser && mc.player.openContainer.inventorySlots.get(0).getStack().isEmpty()) {
 
                     //Prepare for shulker swapping
-                    mc.player.connection.sendPacket(new CPacketHeldItemChange(shulkerIndex));
-                    mc.player.inventory.currentItem = shulkerIndex;
-                    mc.playerController.updateController();
-
-                    mc.playerController.windowClick(mc.player.openContainer.windowId, mc.player.openContainer.inventorySlots.get(0).slotNumber, mc.player.inventory.currentItem, ClickType.SWAP, mc.player);
-
-                    if (mc.player.openContainer != null && mc.player.openContainer instanceof ContainerDispenser && mc.player.openContainer.inventorySlots.get(0).getStack().getItem() instanceof ItemShulkerBox) {
-                        swappedShulker = true;
-
-                        //fast mode checks if shulker is swapped
-                        if (!speed.is("Fast") && redstonePos != null && !placedRedstone) {
-
-                            if (mc.currentScreen instanceof GuiDispenser) mc.player.closeScreen();
-
-                            if (mc.world.getBlockState(redstonePos).getBlock() instanceof BlockAir && (mc.world.getBlockState(redstonePos.down()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.north()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.east()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.south()).getBlock() instanceof BlockDispenser) || mc.world.getBlockState(redstonePos.west()).getBlock() instanceof BlockDispenser) {
-
-                                //Place redstone block
-                                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, mc.player.rotationPitch, mc.player.onGround)); //Sends rotation packet to reset the modified rotation yaw in dispenser placing phase
-
-                                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
-
-                                if (silentSwap.enable) {
-                                    mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
-                                    mc.playerController.updateController();
-                                } else if (!silentSwap.enable) {
-                                    mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
-                                    mc.player.inventory.currentItem = redstoneIndex;
-                                    mc.playerController.updateController();
-                                }
-
-                                placeBlock(redstonePos);
-
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
-
-                                //mc.playerController.processRightClickBlock(mc.player, mc.world, redstonePos, EnumFacing.UP, new Vec3d(redstonePos.getX(), redstonePos.getY(), redstonePos.getZ()), EnumHand.MAIN_HAND);
-                                mc.player.swingArm(EnumHand.MAIN_HAND);
-                                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
-
-                                placedRedstone = true;
-                            }
-                        }
+                    if (!silentSwap.enable) {
+                        mc.player.connection.sendPacket(new CPacketHeldItemChange(shulkerIndex));
+                        mc.player.inventory.currentItem = shulkerIndex;
+                        mc.playerController.updateController();
                     }
 
-                    //this doesnt check if shulker is swapped lmao
-                    if (!speed.is("Insane") && redstonePos != null && !placedRedstone) {
+                    //swap shulker
+                    mc.playerController.windowClick(mc.player.openContainer.windowId, mc.player.openContainer.inventorySlots.get(0).slotNumber, silentSwap.enable ? shulkerIndex : mc.player.inventory.currentItem, ClickType.SWAP, mc.player);
 
-                        if (mc.currentScreen instanceof GuiDispenser) mc.player.closeScreen();
+                    //final shulker box check
+                    if (mc.player.openContainer.inventorySlots.get(0).getStack().getItem() instanceof ItemShulkerBox) {
+                        swappedShulker = true;
+                        mc.player.closeScreen();
+                    }
+                }
 
-                        if (mc.world.getBlockState(redstonePos).getBlock() instanceof BlockAir && (mc.world.getBlockState(redstonePos.down()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.north()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.east()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.south()).getBlock() instanceof BlockDispenser) || mc.world.getBlockState(redstonePos.west()).getBlock() instanceof BlockDispenser) {
+                //if mode is 2-Tick places instantly redstone block quickly after the shulker check
+                if (!speed.is("2-Tick") && redstonePos != null && !placedRedstone) {
 
-                            //Place redstone block
-                            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, mc.player.rotationPitch, mc.player.onGround)); //Sends rotation packet to reset the modified rotation yaw in dispenser placing phase
+                    //Valid placement check
+                    if (mc.world.getBlockState(redstonePos).getBlock() instanceof BlockAir && (mc.world.getBlockState(redstonePos.down()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.north()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.east()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.south()).getBlock() instanceof BlockDispenser) || mc.world.getBlockState(redstonePos.west()).getBlock() instanceof BlockDispenser) {
 
-                            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+                        //Place redstone block
+                        mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, mc.player.rotationPitch, mc.player.onGround)); //Sends rotation packet to reset the modified rotation yaw in dispenser placing phase
+                        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
 
-                            if (silentSwap.enable) {
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
-                                mc.playerController.updateController();
-                            } else if (!silentSwap.enable) {
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
-                                mc.player.inventory.currentItem = redstoneIndex;
-                                mc.playerController.updateController();
-                            }
-
-                            placeBlock(redstonePos);
-
-                            mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
-
-                            //mc.playerController.processRightClickBlock(mc.player, mc.world, redstonePos, EnumFacing.UP, new Vec3d(redstonePos.getX(), redstonePos.getY(), redstonePos.getZ()), EnumHand.MAIN_HAND);
-                            mc.player.swingArm(EnumHand.MAIN_HAND);
-                            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
-
-                            placedRedstone = true;
+                        if (silentSwap.enable) {
+                            mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+                            mc.playerController.updateController();
+                        } else if (!silentSwap.enable) {
+                            mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+                            mc.player.inventory.currentItem = redstoneIndex;
+                            mc.playerController.updateController();
                         }
+
+                        placeBlock(redstonePos);
+
+                        mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+
+                        mc.player.swingArm(EnumHand.MAIN_HAND);
+                        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+
+                        placedRedstone = true;
                     }
                 }
             }
 
             //normal
-            if (speed.is("Normal") && redstonePos != null && swappedShulker && !placedRedstone) {
-
-                if (mc.currentScreen instanceof GuiDispenser) mc.player.closeScreen();
+            if (speed.is("Safe") && redstonePos != null && swappedShulker && !placedRedstone) {
 
                 if (mc.world.getBlockState(redstonePos).getBlock() instanceof BlockAir && (mc.world.getBlockState(redstonePos.down()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.north()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.east()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.south()).getBlock() instanceof BlockDispenser) || mc.world.getBlockState(redstonePos.west()).getBlock() instanceof BlockDispenser) {
 
@@ -584,29 +541,14 @@ public class Dispenser32k extends Module {
             }
 
             //Delay
-            rstick++;
+            //rstick++;
 
-            //place hopper if shulker is swapped and redstone block is placed
-            if (placedRedstone && !placedHopper) {
-                double hopperBlockDistance = 4;
-
-                //Search for closest shulker box
-                for (BlockPos hopperPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 3, mc.player.posY - 2, mc.player.posZ - 3), new BlockPos(mc.player.posX + 3, mc.player.posY + 2, mc.player.posZ + 3))) {
-
-                    if (mc.player.getDistance(hopperPos.getX(), hopperPos.getY(), hopperPos.getZ()) < hopperBlockDistance && mc.world.getBlockState(hopperPos.up()).getBlock() instanceof BlockShulkerBox && mc.world.getBlockState(hopperPos).getBlock() instanceof BlockAir) {
-                        hopperBlockDistance = mc.player.getDistance(hopperPos.getX(), hopperPos.getY(), hopperPos.getZ());
-                        closestHopperPos = hopperPos;
-                    }
-                }
-
+            //fast hopper stuff
+            if (fastHopper.enable && prepareFastHopper) {
                 if (closestHopperPos != null) {
-
-                    //Close dispenser GUI
-                    if (mc.player.openContainer != null && mc.player.openContainer instanceof ContainerDispenser)  mc.player.closeScreen();
-
                     //Place hopper
-                    if (mc.world.getBlockState(closestHopperPos).getBlock() instanceof BlockAir && mc.world.getBlockState(closestHopperPos.up()).getBlock() instanceof BlockShulkerBox) {
-                        Main.sendMessage("Shulker box detected!");
+                    if (mc.world.getBlockState(closestHopperPos).getBlock() instanceof BlockAir) {
+                        ;
                         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
 
                         if (silentSwap.enable) {
@@ -625,30 +567,118 @@ public class Dispenser32k extends Module {
                         mc.player.swingArm(EnumHand.MAIN_HAND);
                         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
 
-                        placedHopper = true;
-
-                        //open hopper
-                        mc.playerController.processRightClickBlock(mc.player, mc.world, closestHopperPos, EnumFacing.UP, new Vec3d(closestHopperPos.getX(), closestHopperPos.getY(), closestHopperPos.getZ()), EnumHand.MAIN_HAND);
-                        //mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(closestHopperPos, EnumFacing.UP, EnumHand.MAIN_HAND, 0.5f, 0.5f, 0.5f));
+                        prepareFastHopper = false;
 
                         if (mc.world.getBlockState(closestHopperPos).getBlock() instanceof BlockHopper) {
                             this.wallHeight = Double.longBitsToDouble(Double.doubleToLongBits(2.226615095116189E307) ^ 0x7FBFB542DC55A837L);
                             renderHopperPos = closestHopperPos;
                         }
+                    }
+                }
+            }
 
-                        clickedHopper = true;
+            //place hopper if shulker is swapped and redstone block is placed
+            if (placedRedstone && !placedHopper) {
 
-                        //if possible, swap current slot to air
-                        if (airIndex != -1) {
-                            if (mc.player.inventory.currentItem != airIndex) {
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(airIndex));
-                                mc.player.inventory.currentItem = airIndex;
+                if (!fastHopper.enable) {
+
+                    double hopperBlockDistance = 4;
+
+                    //Search for closest shulker box
+                    for (BlockPos hopperPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 3, mc.player.posY - 2, mc.player.posZ - 3), new BlockPos(mc.player.posX + 3, mc.player.posY + 2, mc.player.posZ + 3))) {
+
+                        if (mc.player.getDistance(hopperPos.getX(), hopperPos.getY(), hopperPos.getZ()) < hopperBlockDistance && mc.world.getBlockState(hopperPos.up()).getBlock() instanceof BlockShulkerBox && mc.world.getBlockState(hopperPos).getBlock() instanceof BlockAir) {
+                            hopperBlockDistance = mc.player.getDistance(hopperPos.getX(), hopperPos.getY(), hopperPos.getZ());
+                            closestHopperPos = hopperPos;
+                        }
+                    }
+
+                    if (closestHopperPos != null) {
+
+                        //Place hopper
+                        if (mc.world.getBlockState(closestHopperPos).getBlock() instanceof BlockAir && mc.world.getBlockState(closestHopperPos.up()).getBlock() instanceof BlockShulkerBox) {
+                            Main.sendMessage("Shulker box detected!");
+                            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+
+                            if (silentSwap.enable) {
+                                mc.player.connection.sendPacket(new CPacketHeldItemChange(hopperIndex));
+                                mc.playerController.updateController();
+                            } else if (!silentSwap.enable) {
+                                mc.player.connection.sendPacket(new CPacketHeldItemChange(hopperIndex));
+                                mc.player.inventory.currentItem = hopperIndex;
                                 mc.playerController.updateController();
                             }
+
+                            placeBlock(closestHopperPos);
+
+                            mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+
+                            mc.player.swingArm(EnumHand.MAIN_HAND);
+                            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+
+                            placedHopper = true;
+
+                            //open hopper
+                            mc.playerController.processRightClickBlock(mc.player, mc.world, closestHopperPos, EnumFacing.UP, new Vec3d(closestHopperPos.getX(), closestHopperPos.getY(), closestHopperPos.getZ()), EnumHand.MAIN_HAND);
+                            //mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(closestHopperPos, EnumFacing.UP, EnumHand.MAIN_HAND, 0.5f, 0.5f, 0.5f));
+
+                            clickedHopper = true;
+
+                            if (mc.world.getBlockState(closestHopperPos).getBlock() instanceof BlockHopper) {
+                                this.wallHeight = Double.longBitsToDouble(Double.doubleToLongBits(2.226615095116189E307) ^ 0x7FBFB542DC55A837L);
+                                renderHopperPos = closestHopperPos;
+                            }
                         }
-                    } else {
-                        Main.sendMessage("Cannot find shulker box!");
                     }
+                }
+
+                if (fastHopper.enable && !clickedHopper && closestHopperPos != null) {
+                    mc.playerController.processRightClickBlock(mc.player, mc.world, closestHopperPos, EnumFacing.UP, new Vec3d(closestHopperPos.getX(), closestHopperPos.getY(), closestHopperPos.getZ()), EnumHand.MAIN_HAND);
+                    placedHopper = true;
+                    clickedHopper = true;
+
+                    if (mc.world.getBlockState(closestHopperPos).getBlock() instanceof BlockHopper) {
+                        this.wallHeight = Double.longBitsToDouble(Double.doubleToLongBits(2.226615095116189E307) ^ 0x7FBFB542DC55A837L);
+                        renderHopperPos = closestHopperPos;
+                    }
+                }
+            }
+
+            //Swap 32k
+            if (enchantedSwordIndex == -1 && mc.player.openContainer != null && mc.player.openContainer instanceof ContainerHopper && mc.player.openContainer.inventorySlots != null && !mc.player.openContainer.inventorySlots.isEmpty()) {
+                for (int i = 0; i < 5; i++) {
+                    if (mc.player.openContainer.inventorySlots.get(0).inventory.getStackInSlot(i).getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, mc.player.openContainer.inventorySlots.get(0).inventory.getStackInSlot(i)) >= Short.MAX_VALUE) {
+                        enchantedSwordIndex = i;
+                        break;
+                    }
+                }
+
+                if (enchantedSwordIndex == -1) {
+                    return;
+                }
+
+                for (int i = 0; i < 9; i++) {
+                    ItemStack itemStack = mc.player.inventory.mainInventory.get(i);
+                    if (itemStack.getItem() instanceof ItemAir) {
+                        airIndex = i;
+                    }
+                }
+
+                if (!silentSwap.enable && mc.player.inventory.currentItem != airIndex && airIndex > -1) {
+                    mc.player.connection.sendPacket(new CPacketHeldItemChange(airIndex));
+                    mc.player.inventory.currentItem = airIndex;
+                    mc.playerController.updateController();
+                }
+
+                mc.playerController.windowClick(mc.player.openContainer.windowId, enchantedSwordIndex, airIndex, ClickType.SWAP, mc.player);
+                Main.sendMessage("32k found in slot " + enchantedSwordIndex);
+
+                if (autoClose.enable) {
+                    mc.player.closeScreen();
+                }
+
+                if (autoDisable.enable) {
+                    disable();
                 }
             }
 
@@ -660,6 +690,7 @@ public class Dispenser32k extends Module {
             }
         }
 
+        //disable >>
         if (renderHopperPos != null) {
             if (disableRadius) {
                 this.renderHopperPos = null;
@@ -670,9 +701,7 @@ public class Dispenser32k extends Module {
     //pls dont mind this stuff below
     @SubscribeEvent
     public void onRender3d(RenderWorldLastEvent event) {
-        if (clickedHopper) {
-
-            if (!renderCircle.enable) return;
+        if (clickedHopper && renderCircle.enable) {
 
             //draw stuff
             if (this.wallHeight < heightValue) {
@@ -682,23 +711,13 @@ public class Dispenser32k extends Module {
             }
 
             if (renderHopperPos != null) {
-                //Hopper range
-
                 RenderUtils2.drawCircle(renderHopperPos, Double.longBitsToDouble(Double.doubleToLongBits(0.14553988619673233) ^ 0x7FE2A10D0DBD4061L), this.wallHeight, new Color(ColorUtils.BESTCOLOR(0, 255)), new Color(ColorUtils.BESTCOLOR(0, 255)));
                 oldHopperPos = renderHopperPos;
                 this.radius = Double.longBitsToDouble(Double.doubleToLongBits(0.14070361133713452) ^ 0x7FE20293708FA091L);
-
-                /*
-                //Hopper -> hit range
-                RenderUtils2.drawCircle(renderHopperPos, 4.26 + Double.longBitsToDouble(Double.doubleToLongBits(0.14553988619673233) ^ 0x7FE2A10D0DBD4061L), this.wallHeight, new Color(ColorUtils.BESTCOLOR(0, 64)), new Color(ColorUtils.BESTCOLOR(0, 64)));
-                this.radius = 4.67 + Double.longBitsToDouble(Double.doubleToLongBits(0.14553988619673233) ^ 0x7FE2A10D0DBD4061L);
-                */
             }
 
             if (renderHopperPos == null && oldHopperPos != null) {
-                //Hopper range
                 RenderUtils2.drawCircle(oldHopperPos, this.radius, this.wallHeight, new Color(ColorUtils.BESTCOLOR(0, 255)), new Color(ColorUtils.BESTCOLOR(0, 255)));
-
                 if (this.wallHeight > Double.longBitsToDouble(Double.doubleToLongBits(1.1989844897406259E308) ^ 0x7FE557B6C1188A7BL)) {
                     this.wallHeight -= Double.longBitsToDouble(Double.doubleToLongBits(219.7551656050837) ^ 0x7FD2E1B3C896855BL);
                     return;
@@ -730,7 +749,8 @@ public class Dispenser32k extends Module {
                     mc.playerController.updateController();
                 }
 
-                mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos, enumFacing, vec3d, EnumHand.MAIN_HAND);
+                //mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos, enumFacing, vec3d, EnumHand.MAIN_HAND);
+                placeBlock(blockPos);
                 mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
                 mc.player.swingArm(EnumHand.MAIN_HAND);
             } else {
@@ -773,6 +793,9 @@ public class Dispenser32k extends Module {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
 
             //placeBlock(this.placedPos);
+
+            prepareFastHopper = true;
+
             mc.player.swingArm(EnumHand.MAIN_HAND);
         }
 
@@ -810,11 +833,16 @@ public class Dispenser32k extends Module {
         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
         mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos, enumFacing, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), EnumHand.MAIN_HAND);
 
+        prepareFastHopper = true;
+
         this.hasPlacedStuff = true;
     }
 
     //TODO: rewrite hopper placement
     private boolean placeBlock(BlockPos pos) {
+
+        if (mc.world == null || mc.player == null) disable();
+
         Block block = mc.world.getBlockState(pos).getBlock();
 
         if (!(block instanceof BlockAir) && !(block instanceof BlockLiquid)) {
