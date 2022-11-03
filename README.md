@@ -28,7 +28,7 @@ How do I...
 Everything that is skidded for now:
 
 - Guinness Hopperrange idea
-- Pesudo client's 32k Grab, Auto Auto32k
+- Pesudo client's 32k Grab, Auto Auto32k, Silent swap Auto32k and 32kAura idea
 - Utils
 - Commands from postman
 
