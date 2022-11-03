@@ -35,9 +35,9 @@ Most of the code is skidded/copyed from open-source clients. The client developi
 *I recommend to not use this client as a instance!!1!*
 
 ## Credits
+- My dad an my mom for my balls
 - Minecraft and MinecraftForge (without those boiz we can't make client)
 - Pseudonymous000 for helping me out with client developing
 - Minnced for DiscordRPC
 - SpongePowored for mixins
 - nk2ywsa / sheplet for inspiration to make this client
-- SrgantMooMoo for the tutorial and stuff
