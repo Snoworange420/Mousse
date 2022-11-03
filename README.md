@@ -26,7 +26,9 @@ How do I...
 
 ## Info
 Everything that is skidded for now:
-- WWE's Hopper32k
+
+- Guinness Hopperrange idea
+- Pesudo client's 32k Grab, Auto Auto32k
 - Utils
 - Commands from postman
 
@@ -35,7 +37,7 @@ Most of the code is skidded/copyed from open-source clients. The client developi
 *I recommend to not use this client as a instance!!1!*
 
 ## Credits
-- My dad an my mom for my balls
+- My dad and my mom for my balls
 - Minecraft and MinecraftForge (without those boiz we can't make client)
 - Pseudonymous000 for helping me out with client developing
 - Minnced for DiscordRPC
