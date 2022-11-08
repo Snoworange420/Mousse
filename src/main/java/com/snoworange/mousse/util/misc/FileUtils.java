@@ -5,13 +5,11 @@ import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.module.ModuleManager;
 import com.snoworange.mousse.setting.Setting;
 import com.snoworange.mousse.setting.settings.BooleanSetting;
-import com.snoworange.mousse.setting.settings.KeyBindSetting;
 import com.snoworange.mousse.setting.settings.ModeSetting;
 import com.snoworange.mousse.setting.settings.NumberSetting;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 
 public class FileUtils {
@@ -23,12 +21,14 @@ public class FileUtils {
         saveActiveModules(mousse);
         saveBinds(mousse);
         saveSettings(mousse);
+        saveTheme(mousse);
     }
 
     public static void loadAll() {
         loadActiveModules(mousse);
         loadBinds(mousse);
         loadSettings(mousse);
+        loadTheme(mousse);
     }
 
     public static void createDirectory() {
@@ -189,6 +189,51 @@ public class FileUtils {
                             sm.is(pair[1]);
                         }
                     }
+                }
+            }
+            br.close();
+            return;
+        }
+        catch (Exception e) {
+            ex = e;
+        }
+        ex.printStackTrace();
+    }
+
+    public static void saveTheme(final File file) {
+        Exception ex;
+        try {
+            final File theme = new File(file.getAbsolutePath(), "Theme.txt");
+            final BufferedWriter bw = new BufferedWriter(new FileWriter(theme));
+
+            bw.write(Main.themeManager.getCurrentTheme().getName() + ":" + "Theme");
+            bw.write("\r\n");
+            bw.close();
+            return;
+        }
+        catch (Exception e) {
+            ex = e;
+        }
+        ex.printStackTrace();
+    }
+
+    public static void loadTheme(final File file) {
+        Exception ex;
+        try {
+            final File theme = new File(file.getAbsolutePath(), "Theme.txt");
+            if (!theme.exists()) {
+                theme.createNewFile();
+                return;
+            }
+            final BufferedReader br = new BufferedReader(new FileReader(theme));
+            final List<String> linezz = Files.readAllLines(theme.toPath());
+            for (final String line : linezz) {
+                final String[] regex = line.split(":");
+
+                try {
+                    Main.themeManager.setTheme(regex[0]);
+                } catch (Exception exj) {
+                    System.out.println(exj);
                 }
             }
             br.close();

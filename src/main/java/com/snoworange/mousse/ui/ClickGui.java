@@ -7,6 +7,7 @@ import com.snoworange.mousse.setting.Setting;
 import com.snoworange.mousse.setting.settings.BooleanSetting;
 import com.snoworange.mousse.setting.settings.ModeSetting;
 import com.snoworange.mousse.setting.settings.NumberSetting;
+import com.snoworange.mousse.ui.theme.ThemeManager;
 import com.snoworange.mousse.util.misc.FileUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -83,7 +84,7 @@ public class ClickGui extends GuiScreen {
 
         offset = 0;
         for (Category category : Category.values()) {
-            Gui.drawRect((int) posX + 1 + offset, (int) posY, (int) (posX + 80 + offset), (int) posY + 15, new Color(131, 141, 59).getRGB());
+            Gui.drawRect((int) posX + 1 + offset, (int) posY, (int) (posX + 80 + offset), (int) posY + 15, ThemeManager.getTheme().c0.getRGB());
             mc.fontRenderer.drawString(category.name, (int) (posX + 4.5) + offset, (int) ((float) posY + 4.5), -1);
             offset += 80;
         }
@@ -93,7 +94,7 @@ public class ClickGui extends GuiScreen {
         offset = 15;
         for (Module m : Main.moduleManager.getModuleList()) {
             if (openedCombat && m.getCategory() == Category.COMBAT) {
-                Gui.drawRect((int) posX, (int) (posY + 1 + offset), (int) (posX + 80), (int) ((float) posY + 17.5 + offset), m.isToggled() ? new Color(131, 141, 59).getRGB() : new Color(40, 40, 40).getRGB());
+                Gui.drawRect((int) posX, (int) (posY + 1 + offset), (int) (posX + 80), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
                 mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 2.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
                 offset += 17.5;
             }
@@ -104,7 +105,7 @@ public class ClickGui extends GuiScreen {
         offset = 15;
         for (Module m : Main.moduleManager.getModuleList()) {
             if (openedExploit && m.getCategory() == Category.EXPLOIT) {
-                Gui.drawRect((int) posX + 80, (int) (posY + 1 + offset), (int) (posX + 160), (int) ((float) posY + 17.5 + offset), m.isToggled() ? new Color(131, 141, 59).getRGB() : new Color(40, 40, 40).getRGB());
+                Gui.drawRect((int) posX + 80, (int) (posY + 1 + offset), (int) (posX + 160), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
                 mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 82.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
                 offset += 17.5;
             }
@@ -115,7 +116,7 @@ public class ClickGui extends GuiScreen {
         offset = 15;
         for (Module m : Main.moduleManager.getModuleList()) {
             if (openedRender && m.getCategory() == Category.RENDER) {
-                Gui.drawRect((int) posX + 160, (int) (posY + 1 + offset), (int) (posX + 240), (int) ((float) posY + 17.5 + offset), m.isToggled() ? new Color(131, 141, 59).getRGB() : new Color(40, 40, 40).getRGB());
+                Gui.drawRect((int) posX + 160, (int) (posY + 1 + offset), (int) (posX + 240), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
                 mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 162.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
                 offset += 17.5;
             }
@@ -126,7 +127,7 @@ public class ClickGui extends GuiScreen {
         offset = 15;
         for (Module m : Main.moduleManager.getModuleList()) {
             if (openedMovement && m.getCategory() == Category.MOVEMENT) {
-                Gui.drawRect((int) posX + 240, (int) (posY + 1 + offset), (int) (posX + 320), (int) ((float) posY + 17.5 + offset), m.isToggled() ? new Color(131, 141, 59).getRGB() : new Color(40, 40, 40).getRGB());
+                Gui.drawRect((int) posX + 240, (int) (posY + 1 + offset), (int) (posX + 320), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
                 mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 242.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
                 offset += 17.5;
             }
@@ -137,7 +138,7 @@ public class ClickGui extends GuiScreen {
         offset = 15;
         for (Module m : Main.moduleManager.getModuleList()) {
             if (openedPlayer && m.getCategory() == Category.PLAYER) {
-                Gui.drawRect((int) posX + 320, (int) (posY + 1 + offset), (int) (posX + 400), (int) ((float) posY + 17.5 + offset), m.isToggled() ? new Color(131, 141, 59).getRGB() : new Color(40, 40, 40).getRGB());
+                Gui.drawRect((int) posX + 320, (int) (posY + 1 + offset), (int) (posX + 400), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
                 mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 322.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
                 offset += 17.5;
             }
@@ -148,15 +149,15 @@ public class ClickGui extends GuiScreen {
         offset = 15;
         for (Module m : Main.moduleManager.getModuleList()) {
             if (openedMisc && m.getCategory() == Category.MISC) {
-                Gui.drawRect((int) posX + 400, (int) (posY + 1 + offset), (int) (posX + 480), (int) ((float) posY + 17.5 + offset), m.isToggled() ? new Color(131, 141, 59).getRGB() : new Color(40, 40, 40).getRGB());
+                Gui.drawRect((int) posX + 400, (int) (posY + 1 + offset), (int) (posX + 480), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
                 mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 402.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
                 offset += 17.5;
             }
         }
 
         //SettingsManager
-        Gui.drawRect((int) posX2, (int) posY2, (int) (posX2 + 150), (int) (posY2 + 250), new Color(40, 40, 40).getRGB());
-        Gui.drawRect((int) posX2, (int) posY2, (int) (posX2 + 150), (int) (posY2 + 17.5), new Color(131, 141, 59).getRGB());
+        Gui.drawRect((int) posX2, (int) posY2, (int) (posX2 + 150), (int) (posY2 + 250), ThemeManager.getTheme().getC5().getRGB());
+        Gui.drawRect((int) posX2, (int) posY2, (int) (posX2 + 150), (int) (posY2 + 17.5), ThemeManager.getTheme().getC1().getRGB());
 
         if (selectedModule == null) {
             return;
@@ -174,7 +175,7 @@ public class ClickGui extends GuiScreen {
         int offY = 0;
 
         for (Setting setting : selectedModule.settings) {
-            Gui.drawRect((int) (posX2), (int) (posY2 + 35 + offY), (int) (posX2 + 150), (int) (posY2 + 35 + 17.5 + offY), setting instanceof BooleanSetting ? ((BooleanSetting) setting).isEnable() ? new Color(131, 141, 59).getRGB() : new Color(40, 40, 40).getRGB() : new Color(40, 40, 40).getRGB());
+            Gui.drawRect((int) (posX2), (int) (posY2 + 35 + offY), (int) (posX2 + 150), (int) (posY2 + 35 + 17.5 + offY), setting instanceof BooleanSetting ? ((BooleanSetting) setting).isEnable() ? ThemeManager.getTheme().getC2().getRGB() : ThemeManager.getTheme().getC5().getRGB() : ThemeManager.getTheme().getC5().getRGB());
             fontRenderer.drawString(setting instanceof ModeSetting ? setting.name + " > " + ((ModeSetting) setting).getMode() : setting instanceof NumberSetting ? listeningForNumericInput ? "Press a numeric key..." : setting.name + " > " + setting.value : setting.name, (int) posX2 + 5, (int) (posY2 + 40 + offY), -1);
             offY += 17.5;
         }

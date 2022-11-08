@@ -39,7 +39,7 @@ public class LightningBolt extends Module {
             if (mc.world == null || mc.player == null) return;
 
             for (EntityPlayer target : mc.world.playerEntities) {
-                if (target.getHealth() <= 0.069420f && target.deathTime == 0) {
+                if ((target.getHealth() <= 0.069420f && target.deathTime == 0) || target.isDead) {
                     summonLightning(mc.world, target.posX, target.posY, target.posZ);
                 }
             }

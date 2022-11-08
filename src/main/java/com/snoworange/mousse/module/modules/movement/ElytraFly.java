@@ -31,6 +31,8 @@ public class ElytraFly extends Module {
         autoTakeoff = new BooleanSetting("Auto Takeoff", true);
         speed = new NumberSetting("Speed", 0, 1, 20, 0.1);
         super.init();
+
+        addSetting(mode, autoTakeoff, speed);
     }
 
     @Override

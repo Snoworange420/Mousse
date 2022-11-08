@@ -2,14 +2,10 @@ package com.snoworange.mousse.module;
 
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.modules.combat.*;
-import com.snoworange.mousse.module.modules.exploit.SecretClose;
+import com.snoworange.mousse.module.modules.exploit.*;
 import com.snoworange.mousse.module.modules.misc.*;
 import com.snoworange.mousse.module.modules.movement.*;
-import com.snoworange.mousse.module.modules.player.Capes;
-import com.snoworange.mousse.module.modules.player.HeadRotator;
-import com.snoworange.mousse.module.modules.player.Jesus;
-import com.snoworange.mousse.module.modules.player.NoFall;
-import com.snoworange.mousse.module.modules.movement.Scaffold;
+import com.snoworange.mousse.module.modules.player.*;
 import com.snoworange.mousse.module.modules.render.*;
 
 import java.util.*;
@@ -36,7 +32,7 @@ public class ModuleManager {
         modules.add(new FastAura());
         modules.add(new AutoAuto32k());
         modules.add(new Grab32k());
-        modules.add(new SelfBow());
+        //modules.add(new SelfBow());
 
         //EXPLOIT
         modules.add(new SecretClose());
@@ -66,6 +62,7 @@ public class ModuleManager {
         modules.add(new BetterChat());
         modules.add(new DiscordRPC());
         modules.add(new Announcer());
+        modules.add(new GuiTheme());
 
         //RENDER
         modules.add(new ShulkerPeek());
@@ -73,6 +70,7 @@ public class ModuleManager {
         modules.add(new CleanGUI());
         modules.add(new LightningBolt());
         modules.add(new HopperRadius());
+        modules.add(new Particles());
 
         //WORK IN PROGRESS
 

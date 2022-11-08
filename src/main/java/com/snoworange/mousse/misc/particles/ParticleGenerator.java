@@ -26,6 +26,12 @@ public class ParticleGenerator {
         this.amount = amount;
     }
 
+    public void reset() {
+        if (!particles.isEmpty()) {
+            particles.clear();
+        }
+    }
+
     public void draw(final int mouseX, final int mouseY) {
         if (particles.isEmpty() || prevWidth != Minecraft.getMinecraft().displayWidth || prevHeight != Minecraft.getMinecraft().displayHeight) {
             particles.clear();
@@ -42,7 +48,7 @@ public class ParticleGenerator {
             int range = 50;
             final boolean mouseOver = (mouseX >= particle.x - range) && (mouseY >= particle.y - range) && (mouseX <= particle.x + range) && (mouseY <= particle.y + range);
 
-            if (mouseOver) {
+            if (!mouseOver) {
                 particles.stream()
                         .filter(part -> (part.getX() > particle.getX() && part.getX() - particle.getX() < range
                                 && particle.getX() - part.getX() < range)

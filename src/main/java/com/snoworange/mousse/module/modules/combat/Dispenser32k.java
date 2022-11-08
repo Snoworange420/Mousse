@@ -14,6 +14,7 @@ import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
@@ -73,6 +74,7 @@ public class Dispenser32k extends Module {
     BooleanSetting autoDisable;
     BooleanSetting blockShulker;
     BooleanSetting openHopperWithPacket;
+    BooleanSetting disableOnDeath;
 
 
     @Override
@@ -90,8 +92,9 @@ public class Dispenser32k extends Module {
         autoDisable = new BooleanSetting("Auto Disable", true);
         openHopperWithPacket = new BooleanSetting("Open Hopper with Packet", false);
         blockShulker = new BooleanSetting("Block Shulker", false);
+        disableOnDeath = new BooleanSetting("Disable on Death", true);
 
-        addSetting(autoClose, redstoneDelay, fastHopper, allowVertical, renderCircle, silentSwap, swapToSuperweaponIndex, speed, autoDisable, openHopperWithPacket);
+        addSetting(autoClose, redstoneDelay, fastHopper, allowVertical, renderCircle, silentSwap, swapToSuperweaponIndex, speed, autoDisable, openHopperWithPacket, disableOnDeath);
     }
 
     @Override
@@ -896,5 +899,14 @@ public class Dispenser32k extends Module {
         mc.player.swingArm(EnumHand.MAIN_HAND);
 
         return true;
+    }
+
+    @SubscribeEvent
+    public void onDeath(LivingEvent.LivingUpdateEvent event) {
+        if (this.toggled && event.getEntityLiving() instanceof EntityPlayer) {
+            if (mc.player.isDead && disableOnDeath.enable) {
+                disable();
+            }
+        }
     }
 }

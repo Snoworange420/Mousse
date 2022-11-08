@@ -23,10 +23,8 @@ public class Fly extends Module {
     public void init() {
         super.init();
         creative = new BooleanSetting("Creative Mode", false);
-        velocity = new BooleanSetting("Modify Velocty", true);
+        velocity = new BooleanSetting("Modify Velocity", true);
         speed = new NumberSetting("Speed", 1, 0, 0,1);
-
-        addSetting(creative, velocity, speed);
     }
 
     @Override

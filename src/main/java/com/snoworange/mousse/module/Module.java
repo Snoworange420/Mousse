@@ -95,14 +95,14 @@ public abstract class Module {
 
     public void onEnable() {
         MinecraftForge.EVENT_BUS.register(this);
-        if (Main.moduleManager.getModule("Announcer").isToggled() && !Objects.equals(this.name, "ShulkerPeek")) {
+        if (Main.moduleManager.getModule("Announcer").isToggled() && !Objects.equals(this.name, "ShulkerPeek") && !Objects.equals(this.name, "GuiTheme")) {
             Main.sendMessage(this.name + ChatFormatting.GREEN + " enabled." + ChatFormatting.RESET);
         }
     }
 
     public void onDisable() {
         MinecraftForge.EVENT_BUS.register(this);
-        if (Main.moduleManager.getModule("Announcer").isToggled() && !Objects.equals(this.name, "ShulkerPeek")) {
+        if (Main.moduleManager.getModule("Announcer").isToggled() && !Objects.equals(this.name, "ShulkerPeek") && !Objects.equals(this.name, "GuiTheme")) {
             Main.sendMessage(this.name + ChatFormatting.RED + " disabled." + ChatFormatting.RESET);
         }
     }
@@ -117,28 +117,8 @@ public abstract class Module {
         this.toggled = false;
     }
 
-    public void onUpdate() {
-
-    }
-
-    public void onTick() {
-
-    }
-
-    public void onPlayerTick() {
-
-    }
-
     public void init() {
 
-    }
-
-    public boolean isNull() {
-        if (mc.player == null || mc.world == null) {
-            return true;
-        }
-
-        return false;
     }
 
     public void addSetting(Setting... settings) {

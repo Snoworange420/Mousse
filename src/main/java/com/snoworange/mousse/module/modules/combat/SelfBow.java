@@ -10,6 +10,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class SelfBow extends Module {
+
     public SelfBow() {
         super("Selfbow", "shoots yourself when you use bow", Category.COMBAT);
     }

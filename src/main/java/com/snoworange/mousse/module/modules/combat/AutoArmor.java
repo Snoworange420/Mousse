@@ -30,11 +30,11 @@ public class AutoArmor extends Module {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
 
-        if (mc.player == null || mc.world == null || mc.player.ticksExisted % 2 == 0 || mc.currentScreen instanceof GuiContainer && !(mc.currentScreen instanceof InventoryEffectRenderer)) {
-            return;
-        }
-
         if (this.toggled) {
+
+            if (mc.player == null || mc.world == null || mc.player.ticksExisted % 2 == 0 || mc.currentScreen instanceof GuiContainer && !(mc.currentScreen instanceof InventoryEffectRenderer)) {
+                return;
+            }
 
             int[] bestArmorSlots = new int[4];
             int[] bestArmorValues = new int[4];
