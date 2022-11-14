@@ -516,6 +516,7 @@ public class ClickGui extends GuiScreen {
     @Override
     public void initGui() {
         super.initGui();
+
         dragging = false;
         dragging2 = false;
     }

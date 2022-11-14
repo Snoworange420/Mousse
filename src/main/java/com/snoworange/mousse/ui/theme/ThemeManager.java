@@ -25,7 +25,7 @@ public class ThemeManager {
 
     public boolean setTheme(String name) {
         for (Theme theme : themes) {
-            if(theme.getName() == name) {
+            if (theme.getName() == name) {
                 this.index = themes.indexOf(theme);
                 return true;
             }

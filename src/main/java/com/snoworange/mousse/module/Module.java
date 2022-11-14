@@ -71,6 +71,14 @@ public abstract class Module {
         return toggled;
     }
 
+    public boolean isEnabled() {
+        return toggled;
+    }
+
+    public boolean isDisabled() {
+        return !toggled;
+    }
+
     public void setToggled(boolean toggled) {
         if (toggled) {
             if (!this.toggled) {
@@ -105,6 +113,18 @@ public abstract class Module {
         if (Main.moduleManager.getModule("Announcer").isToggled() && !Objects.equals(this.name, "ShulkerPeek") && !Objects.equals(this.name, "GuiTheme")) {
             Main.sendMessage(this.name + ChatFormatting.RED + " disabled." + ChatFormatting.RESET);
         }
+    }
+
+    public void onTick() {
+
+    }
+
+    public void onPlayerTick() {
+
+    }
+
+    public void onUpdate() {
+
     }
 
     public void enable() {

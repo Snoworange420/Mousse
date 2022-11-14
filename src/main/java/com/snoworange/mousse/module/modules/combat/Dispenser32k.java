@@ -759,68 +759,60 @@ public class Dispenser32k extends Module {
     public void placeStuff(int hopperIndex, int shulkerIndex, int redstoneIndex, int dispenserIndex, int obsidianIndex, BlockPos blockPos, EnumFacing enumFacing, Vec3d vec3d) {
         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
 
-        //Place obby (if empty)
+        //Place obby (forced)
         if (mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir) {
-
-            if (obsidianIndex != -1) {
-
-                if (silentSwap.enable) {
-                    mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
-                    mc.playerController.updateController();
-                } else {
-                    mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
-                    mc.player.inventory.currentItem = obsidianIndex;
-                    mc.playerController.updateController();
-                }
-
-                //mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos, enumFacing, vec3d, EnumHand.MAIN_HAND);
-                placeBlock(blockPos);
-                mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
-                mc.player.swingArm(EnumHand.MAIN_HAND);
+            if (silentSwap.enable) {
+                mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
+                mc.playerController.updateController();
             } else {
-                Main.sendMessage("Missing obsidian in your hotbar!");
-                disable();
+                mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
+                mc.player.inventory.currentItem = obsidianIndex;
+                mc.playerController.updateController();
             }
+
+            mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos, EnumFacing.UP, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), EnumHand.MAIN_HAND);
+            mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+            mc.player.swingArm(EnumHand.MAIN_HAND);
         }
 
         this.placedPos = blockPos.up();
 
         //Dispenser placing phase
-        if ((mc.world.getBlockState(this.placedPos).getBlock().equals(Blocks.OBSIDIAN) || mc.world.getBlockState(this.placedPos).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(this.placedPos).isFullBlock()) && mc.world.getBlockState(this.placedPos.up()).getBlock() instanceof BlockAir) {
+        //if (mc.world.getBlockState(this.placedPos).isFullBlock() && mc.world.getBlockState(this.placedPos.up()).getBlock() instanceof BlockAir) {
 
-            //Check witch direction the player needs to be rotate to rotate dispenser
-            float yaw = 0.0f;
+        //Check witch direction the player needs to be rotate to rotate dispenser
+        float yaw = 0.0f;
 
-            if (dispenserDirection == EnumFacing.NORTH) {
-                yaw = -179.0f;
-            } else if (dispenserDirection == EnumFacing.EAST) {
-                yaw = -89.0f;
-            } else if (dispenserDirection == EnumFacing.SOUTH) {
-                yaw = 1.0f;
-            } else if (dispenserDirection == EnumFacing.WEST) {
-                yaw = 91.0f;
-            }
-
-            if (silentSwap.enable) {
-                mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
-                mc.playerController.updateController();
-            } else {
-                mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
-                mc.player.inventory.currentItem = dispenserIndex;
-                mc.playerController.updateController();
-            }
-
-            //Sends rotation packet to rotate dispenser
-            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(yaw, 0, mc.player.onGround));
-            mc.playerController.processRightClickBlock(mc.player, mc.world, this.placedPos, EnumFacing.UP, new Vec3d(this.placedPos.getX(), this.placedPos.getY(), this.placedPos.getZ()), EnumHand.MAIN_HAND);
-            //placeBlock(this.placedPos);
-
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
-
-            prepareFastHopper = true;
-
-            mc.player.swingArm(EnumHand.MAIN_HAND);
+        if (dispenserDirection == EnumFacing.NORTH) {
+            yaw = -179.0f;
+        } else if (dispenserDirection == EnumFacing.EAST) {
+            yaw = -89.0f;
+        } else if (dispenserDirection == EnumFacing.SOUTH) {
+            yaw = 1.0f;
+        } else if (dispenserDirection == EnumFacing.WEST) {
+            yaw = 91.0f;
         }
+
+        if (silentSwap.enable) {
+            mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+            mc.playerController.updateController();
+        } else {
+            mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+            mc.player.inventory.currentItem = dispenserIndex;
+            mc.playerController.updateController();
+        }
+
+        //Sends rotation packet to rotate dispenser
+        mc.player.connection.sendPacket(new CPacketPlayer.Rotation(yaw, 0, mc.player.onGround));
+        mc.playerController.processRightClickBlock(mc.player, mc.world, this.placedPos, EnumFacing.UP, new Vec3d(this.placedPos.getX(), this.placedPos.getY(), this.placedPos.getZ()), EnumHand.MAIN_HAND);
+        //placeBlock(this.placedPos);
+
+        mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+
+        prepareFastHopper = true;
+
+        mc.player.swingArm(EnumHand.MAIN_HAND);
+        //}
 
         this.placedPos = blockPos.up(2);
 

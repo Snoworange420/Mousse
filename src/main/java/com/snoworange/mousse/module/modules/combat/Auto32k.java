@@ -3,8 +3,6 @@ package com.snoworange.mousse.module.modules.combat;
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
-import com.snoworange.mousse.setting.settings.BooleanSetting;
-import com.snoworange.mousse.setting.settings.NumberSetting;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;

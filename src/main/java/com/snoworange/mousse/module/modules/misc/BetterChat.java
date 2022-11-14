@@ -77,37 +77,40 @@ public class BetterChat extends Module {
     @SubscribeEvent
     public void onChat(final ClientChatEvent event) {
 
-        for (final String s : Arrays.asList("/", ".", "-", ",", ":", ";", "'", "\"", "+", "@", "#", "&", "_")) {
-            if (event.getMessage().startsWith(s)) return;
-        }
+        if (this.toggled) {
 
-        if (customPrefix.enable) {
-
-            if (this.chatModifiers.size() == 0) {
-                Main.sendMessage("The BetterChat.txt file is empty. No prefix will be sent.");
-                return;
+            for (final String s : Arrays.asList("/", ".", "-", ",", ":", ";", "'", "\"", "+", "@", "#", "&", "_")) {
+                if (event.getMessage().startsWith(s)) return;
             }
 
-            final String prefix = this.chatModifiers.get(0);
+            if (customPrefix.enable) {
 
-            event.setMessage(prefix + " " + event.getMessage());
-        } else if (!customPrefix.enable) {
-            event.setMessage("> " + event.getMessage());
-        }
+                if (this.chatModifiers.size() == 0) {
+                    Main.sendMessage("The BetterChat.txt file is empty. No prefix will be sent.");
+                    return;
+                }
 
-        if (customSuffix.enable) {
+                final String prefix = this.chatModifiers.get(0);
 
-            if (this.chatModifiers.size() <= 1) {
-                Main.sendMessage("The suffix text in BetterChat.txt is empty. No suffix will be sent.");
-                return;
+                event.setMessage(prefix + " " + event.getMessage());
+            } else if (!customPrefix.enable) {
+                event.setMessage("> " + event.getMessage());
             }
 
-            final String suffix = this.chatModifiers.get(1);
+            if (customSuffix.enable) {
 
-            event.setMessage(event.getMessage() + suffix);
+                if (this.chatModifiers.size() <= 1) {
+                    Main.sendMessage("The suffix text in BetterChat.txt is empty. No suffix will be sent.");
+                    return;
+                }
 
-        } else if (!customSuffix.enable) {
-            event.setMessage(event.getMessage() + " / Mousse");
+                final String suffix = this.chatModifiers.get(1);
+
+                event.setMessage(event.getMessage() + suffix);
+
+            } else if (!customSuffix.enable) {
+                event.setMessage(event.getMessage() + " / Mousse");
+            }
         }
     }
 }

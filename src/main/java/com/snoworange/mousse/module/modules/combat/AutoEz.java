@@ -103,7 +103,7 @@ public class AutoEz extends Module {
         final int rand = new Random().nextInt(this.ezMessages.size());
         AutoEz.targets.remove(name);
 
-        final String ezMessage = this.ezMessages.get(rand).replace("$name$", name);
+        final String ezMessage = this.ezMessages.get(rand).replace("$name$", name).replace("$clientname$", Main.NAME).replace("$version$", Main.VERSION);
 
         mc.player.sendChatMessage(ezMessage);
     }

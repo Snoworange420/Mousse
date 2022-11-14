@@ -206,8 +206,7 @@ public class FileUtils {
             final File theme = new File(file.getAbsolutePath(), "Theme.txt");
             final BufferedWriter bw = new BufferedWriter(new FileWriter(theme));
 
-            bw.write(Main.themeManager.getCurrentTheme().getName() + ":" + "Theme");
-            bw.write("\r\n");
+            bw.write(String.valueOf(Main.themeManager.index));
             bw.close();
             return;
         }
@@ -228,12 +227,12 @@ public class FileUtils {
             final BufferedReader br = new BufferedReader(new FileReader(theme));
             final List<String> linezz = Files.readAllLines(theme.toPath());
             for (final String line : linezz) {
-                final String[] regex = line.split(":");
-
                 try {
-                    Main.themeManager.setTheme(regex[0]);
-                } catch (Exception exj) {
-                    System.out.println(exj);
+                    if (Integer.parseInt(line) > -1) {
+                        Main.themeManager.index = Integer.parseInt(line);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             br.close();

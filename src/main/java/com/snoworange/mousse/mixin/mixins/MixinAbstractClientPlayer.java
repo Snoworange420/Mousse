@@ -2,7 +2,6 @@ package com.snoworange.mousse.mixin.mixins;
 
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.modules.player.Capes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.ResourceLocation;
@@ -23,15 +22,16 @@ public abstract class MixinAbstractClientPlayer {
 
     @Inject(method={"getLocationCape"}, at={@At(value="HEAD")}, cancellable=true)
     public void getLocationCape(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
-        NetworkPlayerInfo info = this.getPlayerInfo();
-        UUID uuid = null;
-        if (info != null) {
-            uuid = this.getPlayerInfo().getGameProfile().getId();
-        }
-
         if (Main.moduleManager.getModule("Capes").isToggled()) {
+            NetworkPlayerInfo info = this.getPlayerInfo();
+            UUID uuid = null;
+            if (info != null) {
+                uuid = this.getPlayerInfo().getGameProfile().getId();
+            }
+
             ResourceLocation cape = Capes.getCapeResource((AbstractClientPlayer) (Object) this);
-            if (uuid != null && Minecraft.getMinecraft().getSession().getUsername().equals(this.getPlayerInfo().getGameProfile().getName())) {
+
+            if (uuid != null) {
                 callbackInfoReturnable.setReturnValue(cape);
             }
         }

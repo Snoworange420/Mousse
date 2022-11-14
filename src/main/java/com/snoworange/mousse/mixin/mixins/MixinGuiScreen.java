@@ -26,13 +26,13 @@ public class MixinGuiScreen {
 
     @Inject(method = "drawWorldBackground(I)V", at = @At("HEAD"), cancellable = true)
     private void drawWorldBackgroundWrapper(final int tint, final CallbackInfo ci) {
-        if (Minecraft.getMinecraft().world != null && (Main.moduleManager.getModule("CleanGUI").isToggled() || Main.moduleManager.getModule("Particles").isToggled())) {
+        if (Minecraft.getMinecraft().world != null && Main.moduleManager.getModule("CleanGUI").isToggled()) {
             ci.cancel();
         }
 
         if (Minecraft.getMinecraft().world != null) {
 
-             if (Main.moduleManager.getModule("Particles").isToggled()) {
+            if (Main.moduleManager.getModule("Particles").isToggled()) {
                 final ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
                 final int width = scaledResolution.getScaledWidth();
                 final int height = scaledResolution.getScaledHeight();

@@ -33,6 +33,7 @@ public class ModuleManager {
         modules.add(new AutoAuto32k());
         modules.add(new Grab32k());
         //modules.add(new SelfBow());
+        modules.add(new Auto32k2019());
 
         //EXPLOIT
         modules.add(new SecretClose());
@@ -63,6 +64,8 @@ public class ModuleManager {
         modules.add(new DiscordRPC());
         modules.add(new Announcer());
         modules.add(new GuiTheme());
+        //modules.add(new TrueDurability());
+        //modules.add(new DebugModule());
 
         //RENDER
         modules.add(new ShulkerPeek());
@@ -105,17 +108,5 @@ public class ModuleManager {
             }
         }
         return modules;
-    }
-
-    public static Module getModuleP(final Predicate predicate) {
-        return (Module)getModulesP().stream().filter(predicate).findFirst().orElse(null);
-    }
-
-    public static List getModulesP(final Predicate predicate) {
-        return (List)getModulesP().stream().filter(predicate).collect(Collectors.toList());
-    }
-
-    public static List getModulesP() {
-        return getInstance().modules;
     }
 }

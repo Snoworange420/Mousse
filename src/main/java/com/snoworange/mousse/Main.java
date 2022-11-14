@@ -2,6 +2,7 @@ package com.snoworange.mousse;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import com.snoworange.mousse.command.CommandManager;
+import com.snoworange.mousse.event.ForgeEventHandeler;
 import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.module.ModuleManager;
 import com.snoworange.mousse.ui.ClickGui;
@@ -23,37 +24,31 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
+import java.io.File;
+
 
 @Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION)
 public class Main {
-    public static ThemeManager themeManager = new ThemeManager();
 
     public static ModuleManager moduleManager;
-
     public static Hud hud;
     public static KeyBinding ClickGUI;
+    public static ThemeManager themeManager;
     public static CommandManager commandManager;
-    private ClickGui clickgui;
-    //public ClickGui clickGui;
+    public static ClickGui clickgui;
+    public static ForgeEventHandeler forgeEventHandeler;
 
     //
 
     public static final String MOD_ID = "mousse";
     public static final String NAME = "Mousse";
-    public static final String VERSION = "v0.5.4";
+    public static final String VERSION = "v0.5.7";
 
     public static Minecraft mc = Minecraft.getMinecraft();
-
-    public static final JColor MOUSSE_COLOR = new JColor(131, 141, 59);
 
     //
     @Mod.Instance
     public Main instance;
-
-
-    @Mod.EventHandler
-    public void PreInit(FMLPreInitializationEvent event) {
-    }
 
     public void initFilesystem() {
         FileUtils.createDirectory();
@@ -72,6 +67,8 @@ public class Main {
         commandManager = new CommandManager();
         hud = new Hud();
         clickgui = new ClickGui();
+        themeManager = new ThemeManager();
+        forgeEventHandeler = new ForgeEventHandeler();
 
         ClickGUI = new KeyBinding("ClickGUI", Keyboard.KEY_NONE, "Mousse");
         ClientRegistry.registerKeyBinding(ClickGUI);
@@ -115,6 +112,7 @@ public class Main {
     @SubscribeEvent
     public void displayGuiScreen(TickEvent.ClientTickEvent event) {
         if (Main.ClickGUI.isPressed()) {
+            FileUtils.loadTheme(FileUtils.mousse);
             mc.displayGuiScreen(new ClickGui());
         }
     }
