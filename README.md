@@ -39,10 +39,13 @@ Everything that is skidded for now:
 Most of the code is skidded/copyed from open-source clients. The client developing is in progress.
 *I recommend to not use this client as a instance!!1!*
 
-## Credits
+## Huge thanks to:
 - My dad and my mom for my balls
 - Minecraft and MinecraftForge (without those boiz we can't make client)
 - Pseudonymous000 for helping me out with client developing
 - Minnced for DiscordRPC
 - SpongePowored for mixins
 - nk2ywsa / sheplet for inspiration to make this client
+
+> ### Disclaimer
+> This software does not contain any copyrighted Minecraft code. This is a Forge utility mod, only meant for use in anarchy environments. Do not use without permission of server administration.
