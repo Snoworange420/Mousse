@@ -1,7 +1,7 @@
 ## Mousse
 An advanced utility mod, aimed at use in Minecraft 1.12.2 anarchy servers.
 
-![minecraft](https://img.shields.io/badge/Minecraft-1.12.2-darkred)
+![minecraft](https://img.shields.io/badge/Minecraft-1.12.2-yellowgreen)
 ![minecraft](https://img.shields.io/badge/Keybind-none-pink)
 ![GitHub all releases](https://img.shields.io/github/downloads/Snoworange420/Mousse/total?color=seagreen)
 ![CodeFactor grade](https://img.shields.io/codefactor/grade/github/Snoworange420/Mousse?color=magenta)
