@@ -27,6 +27,13 @@ How do I...
 
 </details>
 
+<details>
+  <summary>... fix your skill issue?</summary>
+
+> THE SKILL ISSUE IS UNSTOPPABLE
+
+</details>
+
 ## Info
 Everything that is skidded for now:
 
