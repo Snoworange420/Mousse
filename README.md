@@ -3,7 +3,11 @@ An advanced utility mod, aimed at use in Minecraft 1.12.2 anarchy servers.
 
 ![minecraft](https://img.shields.io/badge/Minecraft-1.12.2-blue)
 ![minecraft](https://img.shields.io/badge/Keybind-none-pink)
+![GitHub all releases](https://img.shields.io/github/downloads/Snoworange420/Mousse/total?color=seagreen)
+![CodeFactor grade](https://img.shields.io/codefactor/grade/github/Snoworange420/Mousse?color=magenta)
+![GitHub workflow status](https://img.shields.io/github/workflow/status/lambda-client/lambda/gradle_build?logo=gradle)
 ![Lines of code](https://img.shields.io/tokei/lines/github/Snoworange420/Mousse?color=lightcoral&label=Lines%20of%20code)
+![GitHub repo size](https://img.shields.io/github/repo-size/Snoworange420/Mousse)
 [![discord](https://img.shields.io/badge/Discord-Invite-8080c0)](https://discord.gg/Xp4ZZy9Ah3)
 
 ## FAQ
@@ -27,7 +31,7 @@ How do I...
 ## Info
 Everything that is skidded for now:
 
-- Guinness Hopperrange idea
+- Guinness Hopperradius idea
 - Pesudo client's 32k Grab, Auto Auto32k, Silent swap Auto32k and 32kAura idea
 - Utils
 - Commands from postman
