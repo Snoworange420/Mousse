@@ -43,8 +43,8 @@ Everything that is skidded for now:
 - Commands from postman
 
 ## Comment
-Since I have coded some 32k modules I will now focus on bug fixing and add "casual" modules (e.g. Speed, KillAura, AutoTotem..)
-Most of the code is skidded/copyed from open-source clients. The client developing is in progress.
+- Since I have coded some 32k modules I will now focus on bug fixing and add "casual" modules (e.g. Speed, KillAura, AutoTotem..)
+- Most of the code is skidded/copyed from open-source clients. The client developing is in progress.
 *Since some code is messy I don't recommend to use this client as a instance!!!!*
 
 ## Huge thanks to:
