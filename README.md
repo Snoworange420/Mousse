@@ -43,8 +43,9 @@ Everything that is skidded for now:
 - Commands from postman
 
 ## Comment
+Since I have coded some 32k modules I will now focus on bug fixing and add "casual" modules (e.g. Speed, KillAura, AutoTotem..)
 Most of the code is skidded/copyed from open-source clients. The client developing is in progress.
-*I recommend to not use this client as a instance!!1!*
+*Since some code is messy I don't recommend to use this client as a instance!!!!*
 
 ## Huge thanks to:
 - My dad and my mom for my balls
@@ -53,6 +54,5 @@ Most of the code is skidded/copyed from open-source clients. The client developi
 - Minnced for DiscordRPC
 - SpongePowored for mixins
 - nk2ywsa / sheplet for inspiration to make this client
-
 > ### Disclaimer
 > This software does not contain any copyrighted Minecraft code. This is a Forge utility mod, only meant for use in anarchy environments. Do not use without permission of server administration.
