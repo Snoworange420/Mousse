@@ -22,8 +22,6 @@ public class CommandManager {
 
         commands.add(new Peek());
         commands.add(new Say());
-        //commands.add(new Dispenser32kRedstoneDelay());
-        //commands.add(new Dispenser32kAutoClose());
         commands.add(new Load());
         commands.add(new Save());
     }
@@ -61,44 +59,8 @@ public class CommandManager {
         }
     }
 
-    /*
-    @EventHandler
-    public Listener<ClientChatEvent> listener = new Listener<>(event -> {
-
-        String message = event.getMessage();
-
-        if (!message.startsWith(prefix)) {
-            return;
-        }
-
-        event.setCanceled(true);
-        message = message.substring(prefix.length());
-
-        if(message.split(" ").length > 0) {
-            boolean commandFound = false;
-            String commandName = message.split(" ")[0];
-            if(commandName.equals("") || commandName.equals("help")) {
-                ChatFormatting GRAY = ChatFormatting.GRAY;
-                ChatFormatting BOLD = ChatFormatting.BOLD;
-                ChatFormatting RESET = ChatFormatting.RESET;
-                sendCommandDescriptions();
-            } else {
-                for (Command c : commands) {
-                    if (c.aliases.contains(commandName) || c.name.equalsIgnoreCase(commandName)) {
-                        c.onCommand(Arrays.copyOfRange(message.split(" "), 1, message.split(" ").length), message);
-                        commandFound = true;
-                        break;
-                    }
-                }
-                if (!commandFound) {
-                    sendClientChatMessage(ChatFormatting.DARK_RED + "command does not exist, use " + ChatFormatting.ITALIC + prefix + "help " + ChatFormatting.RESET + "" + ChatFormatting.DARK_RED + "for help.", true);
-                }
-            }
-        }
-    });
-     */
     private void sendCommandDescriptions() {
-        sendClientChatMessage("\n", false);
+        sendClientChatMessage("Commands:", false);
         for (Command c : Main.commandManager.commands) {
             sendClientChatMessage(c.name + " - " + c.description + " [" + c.syntax + "]", false);
         }

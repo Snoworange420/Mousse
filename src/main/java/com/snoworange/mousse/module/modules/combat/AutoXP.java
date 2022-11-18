@@ -14,9 +14,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class AutoXP extends Module {
 
-    public int delay = 6;
-    public int tick = 0;
-
     public AutoXP() {
         super("AutoXP", "", Category.COMBAT, 0);
     }
@@ -37,8 +34,6 @@ public class AutoXP extends Module {
 
             if (mc.world == null || mc.player == null) return;
 
-            tick++;
-
             int xpIndex = -1;
 
             for (int i = 8; i > -1; i--) {
@@ -51,12 +46,9 @@ public class AutoXP extends Module {
 
             if (xpIndex == -1) return;
 
-            if (tick >= delay) {
-                mc.player.connection.sendPacket(new CPacketHeldItemChange(xpIndex));
-                mc.playerController.updateController();
-                mc.player.connection.sendPacket(new CPacketPlayerTryUseItem(EnumHand.MAIN_HAND));
-                tick = 0;
-            }
+            mc.player.connection.sendPacket(new CPacketHeldItemChange(xpIndex));
+            mc.playerController.updateController();
+            mc.player.connection.sendPacket(new CPacketPlayerTryUseItem(EnumHand.MAIN_HAND));
 
             mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
         }

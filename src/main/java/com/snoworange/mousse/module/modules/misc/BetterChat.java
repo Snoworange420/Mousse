@@ -31,8 +31,8 @@ public class BetterChat extends Module {
     public void init() {
         super.init();
 
-        customPrefix = new BooleanSetting("Custom Prefix", false);
-        customSuffix = new BooleanSetting("Custom Suffix", false);
+        customPrefix = new BooleanSetting("Custom Prefix", true);
+        customSuffix = new BooleanSetting("Custom Suffix", true);
 
         addSetting(customPrefix, customSuffix);
     }

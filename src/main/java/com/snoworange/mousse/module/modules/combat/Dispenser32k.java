@@ -90,11 +90,11 @@ public class Dispenser32k extends Module {
         swapToSuperweaponIndex = new BooleanSetting("Select 32k Slot", true);
         speed = new ModeSetting("Speed", "Safe", "Safe", "2-Tick");
         autoDisable = new BooleanSetting("Auto Disable", true);
-        openHopperWithPacket = new BooleanSetting("Open Hopper with Packet", false);
+        openHopperWithPacket = new BooleanSetting("Open Hopper with Packet", true);
         blockShulker = new BooleanSetting("Block Shulker", false);
         disableOnDeath = new BooleanSetting("Disable on Death", true);
 
-        addSetting(autoClose, redstoneDelay, fastHopper, allowVertical, renderCircle, silentSwap, swapToSuperweaponIndex, speed, autoDisable, openHopperWithPacket, disableOnDeath);
+        addSetting(autoClose, /* redstoneDelay, */ fastHopper, allowVertical, renderCircle, silentSwap, swapToSuperweaponIndex, speed, autoDisable, openHopperWithPacket, disableOnDeath);
     }
 
     @Override

@@ -9,7 +9,6 @@ import com.snoworange.mousse.ui.ClickGui;
 import com.snoworange.mousse.ui.Hud;
 import com.snoworange.mousse.ui.theme.ThemeManager;
 import com.snoworange.mousse.util.misc.FileUtils;
-import com.snoworange.mousse.util.render.JColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.text.TextComponentString;
@@ -23,8 +22,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-
-import java.io.File;
 
 
 @Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION)
@@ -42,7 +39,7 @@ public class Main {
 
     public static final String MOD_ID = "mousse";
     public static final String NAME = "Mousse";
-    public static final String VERSION = "v0.5.7";
+    public static final String VERSION = "v0.6.0";
 
     public static Minecraft mc = Minecraft.getMinecraft();
 

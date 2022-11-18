@@ -110,6 +110,7 @@ public class FastAura extends Module {
         }
     }
 
+    //Does this work accutually?...
     public void attack(EntityPlayer target, ModeSetting attackMode) {
         Attack1.attack(target, attackMode);
         Attack2.attack(target, attackMode);

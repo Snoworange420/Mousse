@@ -75,10 +75,12 @@ public class ShulkerPeek extends Module {
                     mc.displayGuiScreen((GuiScreen) new GuiChest((IInventory) mc.player.inventory, (IInventory) new InventoryBasic("Shulker Box", true, 27)));
                 }
 
+                Main.sendMessage("Opened shulker box.");
                 mc.world.playSound(mc.player, mc.player.posX, mc.player.posY, mc.player.posZ, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5f, 1.0f);
             } else {
                 Main.sendMessage("Coudn't find shulker box in your hands!");
             }
+
             disable();
         }
     }

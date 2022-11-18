@@ -9,48 +9,31 @@ import com.snoworange.mousse.setting.settings.ModeSetting;
 import com.snoworange.mousse.setting.settings.NumberSetting;
 import com.snoworange.mousse.ui.theme.ThemeManager;
 import com.snoworange.mousse.util.misc.FileUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.io.IOException;
-import java.math.RoundingMode;
 import java.util.Locale;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 public class ClickGui extends GuiScreen {
 
-    public double posX, posY, width, height, dragX, dragY;
+    private double posX, posY, dragX, dragY;
     private double posX2, posY2, dragX2, dragY2;
-    public boolean dragging;
-    public boolean dragging2;
-    public Category selectedCategory;
+    public boolean dragging, dragging2;
     private Module selectedModule;
-    public int modeIndex;
-    public boolean openedCombat = true;
-    public boolean openedExploit = true;
-    public boolean openedRender = true;
-    public boolean openedMovement = true;
-    public boolean openedPlayer = true;
-    public boolean openedMisc = true;
     public boolean listeningForKey;
-    public boolean listeningForNumericInput;
 
     //TODO: Clickgui rewrite
 
     public ClickGui() {
         dragging = false;
-        dragging2 = false;
         posX = 100;
         posY = 50;
         posX2 = 650;
         posY2 = 50;
-        width = posX + 150 * 2;
         height = height + 200;
     }
 
@@ -58,14 +41,6 @@ public class ClickGui extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
-
-        mc.fontRenderer.drawString("Mousse Client by Jonakip, Snoworange & Huub" ,0, 5, -1);
-
-        /*
-        mc.fontRenderer.drawString("PosX, PosY: " + posX + " " + posY, 100, 100, -1);
-        mc.fontRenderer.drawString("MouseX, MouseY: " + mouseX + " " + mouseY, 100, 115, -1);
-        mc.fontRenderer.drawString("PosX2, PosY2: " + posX2 + " " + posY2, 100, 135, -1);
-        */
 
         if (dragging) {
             posX = mouseX - dragX;
@@ -77,82 +52,30 @@ public class ClickGui extends GuiScreen {
             posY2 = mouseY - dragY2;
         }
 
-        width = posX + 285;
-        height = posY + 150;
-
+        //Draw category
         int offset = 0;
-
-        offset = 0;
         for (Category category : Category.values()) {
             Gui.drawRect((int) posX + 1 + offset, (int) posY, (int) (posX + 80 + offset), (int) posY + 15, ThemeManager.getTheme().c0.getRGB());
             mc.fontRenderer.drawString(category.name, (int) (posX + 4.5) + offset, (int) ((float) posY + 4.5), -1);
             offset += 80;
         }
 
-        //Combat
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (openedCombat && m.getCategory() == Category.COMBAT) {
-                Gui.drawRect((int) posX, (int) (posY + 1 + offset), (int) (posX + 80), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
-                mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 2.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
-                offset += 17.5;
+        //Draw modules
+        int yoffsetModules = 15;
+        int xoffsetModules = 0;
+        for (Category c : Category.values()) {
+            for (Module m : Main.moduleManager.getModuleList()) {
+                if (c.equals(m.getCategory())) {
+                    if (c.opened) {
+                        Gui.drawRect((int) posX + xoffsetModules, (int) (posY + 1 + yoffsetModules), (int) (posX + 80 + xoffsetModules), (int) ((float) posY + 17.5 + yoffsetModules), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
+                        mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 2.5 + xoffsetModules), (int) ((float) posY + 6.5) + yoffsetModules, new Color(170, 170, 170).getRGB());
+                        yoffsetModules += 17.5;
+                    }
+                }
             }
-        }
 
-        //Exploit
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (openedExploit && m.getCategory() == Category.EXPLOIT) {
-                Gui.drawRect((int) posX + 80, (int) (posY + 1 + offset), (int) (posX + 160), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
-                mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 82.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
-                offset += 17.5;
-            }
-        }
-
-        //Render
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (openedRender && m.getCategory() == Category.RENDER) {
-                Gui.drawRect((int) posX + 160, (int) (posY + 1 + offset), (int) (posX + 240), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
-                mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 162.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
-                offset += 17.5;
-            }
-        }
-
-        //Movement
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (openedMovement && m.getCategory() == Category.MOVEMENT) {
-                Gui.drawRect((int) posX + 240, (int) (posY + 1 + offset), (int) (posX + 320), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
-                mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 242.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
-                offset += 17.5;
-            }
-        }
-
-        //Player
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (openedPlayer && m.getCategory() == Category.PLAYER) {
-                Gui.drawRect((int) posX + 320, (int) (posY + 1 + offset), (int) (posX + 400), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
-                mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 322.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
-                offset += 17.5;
-            }
-        }
-
-        //Misc
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (openedMisc && m.getCategory() == Category.MISC) {
-                Gui.drawRect((int) posX + 400, (int) (posY + 1 + offset), (int) (posX + 480), (int) ((float) posY + 17.5 + offset), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
-                mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 402.5), (int) ((float) posY + 6.5) + offset, new Color(170, 170, 170).getRGB());
-                offset += 17.5;
-            }
+            xoffsetModules += 80;
+            yoffsetModules = 15;
         }
 
         //SettingsManager
@@ -176,7 +99,7 @@ public class ClickGui extends GuiScreen {
 
         for (Setting setting : selectedModule.settings) {
             Gui.drawRect((int) (posX2), (int) (posY2 + 35 + offY), (int) (posX2 + 150), (int) (posY2 + 35 + 17.5 + offY), setting instanceof BooleanSetting ? ((BooleanSetting) setting).isEnable() ? ThemeManager.getTheme().getC2().getRGB() : ThemeManager.getTheme().getC5().getRGB() : ThemeManager.getTheme().getC5().getRGB());
-            fontRenderer.drawString(setting instanceof ModeSetting ? setting.name + " > " + ((ModeSetting) setting).getMode() : setting instanceof NumberSetting ? listeningForNumericInput ? "Press a numeric key..." : setting.name + " > " + setting.value : setting.name, (int) posX2 + 5, (int) (posY2 + 40 + offY), -1);
+            fontRenderer.drawString(setting instanceof ModeSetting ? setting.name + " > " + ((ModeSetting) setting).getMode() : setting instanceof NumberSetting ? setting.name + " > " + setting.value : setting.name, (int) posX2 + 5, (int) (posY2 + 40 + offY), -1);
             offY += 17.5;
         }
     }
@@ -209,21 +132,23 @@ public class ClickGui extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        if (isInside(mouseX, mouseY, posX, posY - 12.5, width + 160, posY + 12.5) && mouseButton == 0) {
+
+        //Drag module shit
+        if (isInside(mouseX, mouseY, posX, posY - 12.5, posX + 480, posY + 12.5) && mouseButton == 0) {
             dragging = true;
             dragX = mouseX - posX;
             dragY = mouseY - posY;
         }
 
-        if (isInside2(mouseX, mouseY, posX2, posY2, posX2 + 250, posY2 + 250) && mouseButton == 0) {
+        //Drag setting panel
+        if (isInside(mouseX, mouseY, posX2, posY2, posX2 + 250, posY2 + 15) && mouseButton == 0) {
             dragging2 = true;
             dragX2 = mouseX - posX2;
             dragY2 = mouseY - posY2;
         }
 
         //Settingsmanager
-
-        if (isInside2(mouseX, mouseY, posX2, posY2 + 17.5, posX2 + 150, posY2 + 30)) {
+        if (isInside(mouseX, mouseY, posX2, posY2 + 17.5, posX2 + 150, posY2 + 30)) {
             if (!listeningForKey) {
                 listeningForKey = true;
             } else if (listeningForKey) {
@@ -231,220 +156,56 @@ public class ClickGui extends GuiScreen {
             }
         }
 
-        int offset = 0;
+        int yoffsetModules = 15;
+        int xoffsetModules = 0;
 
-        //Combat
+        //Click stuff
+        for (Category c : Category.values()) {
+            for (Module m : Main.moduleManager.getModuleList()) {
+                if (c.equals(m.getCategory())) {
+                    if (c.opened) {
+                        if (isInside(mouseX, mouseY, posX + xoffsetModules, posY + 1 + yoffsetModules, posX + 80 + xoffsetModules, posY + 15 + yoffsetModules)) {
+                            if (mouseButton == 0) {
+                                m.toggle();
+                            }
 
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (m.getCategory() == Category.COMBAT) {
-                if (isInside(mouseX, mouseY, posX, posY + 1 + offset, posX + 80, posY + 15 + offset)) {
-                    if (mouseButton == 0) {
-                        m.toggle();
-                    }
+                            if (mouseButton == 1) {
+                                selectedModule = m;
+                            }
+                        }
 
-                    if (mouseButton == 1) {
-                        selectedModule = m;
-                    }
-                }
-                offset += 17.5;
-            }
-        }
-
-        //Exploit
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (m.getCategory() == Category.EXPLOIT) {
-                if (isInside(mouseX, mouseY, posX + 80, posY + 1 + offset, posX + 160, posY + 15 + offset)) {
-                    if (mouseButton == 0) {
-                        m.toggle();
-                    }
-
-                    if (mouseButton == 1) {
-                        selectedModule = m;
+                        yoffsetModules += 17.5;
                     }
                 }
-                offset += 17.5;
             }
+
+            xoffsetModules += 80;
+            yoffsetModules = 15;
         }
 
-        //Render
+        //Implementing opening stuff soon...
 
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (m.getCategory() == Category.RENDER) {
-                if (isInside(mouseX, mouseY, posX + 160, posY + 1 + offset, posX + 240, posY + 15 + offset)) {
-                    if (mouseButton == 0) {
-                        m.toggle();
-                    }
-
-                    if (mouseButton == 1) {
-                        selectedModule = m;
-                    }
-                }
-                offset += 17.5;
-            }
-        }
-
-        //Movement
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (m.getCategory() == Category.MOVEMENT) {
-                if (isInside(mouseX, mouseY, posX + 240, posY + 1 + offset, posX + 320, posY + 15 + offset)) {
-                    if (mouseButton == 0) {
-                        m.toggle();
-                    }
-
-                    if (mouseButton == 1) {
-                        selectedModule = m;
-                    }
-                }
-                offset += 17.5;
-            }
-        }
-
-        //Player
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (m.getCategory() == Category.PLAYER) {
-                if (isInside(mouseX, mouseY, posX + 320, posY + 1 + offset, posX + 400, posY + 15 + offset)) {
-                    if (mouseButton == 0) {
-                        m.toggle();
-                    }
-
-                    if (mouseButton == 1) {
-                        selectedModule = m;
-                    }
-                }
-                offset += 17.5;
-            }
-        }
-
-        //Misc
-
-        offset = 15;
-        for (Module m : Main.moduleManager.getModuleList()) {
-            if (m.getCategory() == Category.MISC) {
-                if (isInside(mouseX, mouseY, posX + 400, posY + 1 + offset, posX + 480, posY + 15 + offset)) {
-                    if (mouseButton == 0) {
-                        m.toggle();
-                    }
-
-                    if (mouseButton == 1) {
-                        selectedModule = m;
-                    }
-                }
-                offset += 17.5;
-            }
-        }
-
-        offset = 0;
-
-        //Combat
-        if (isInside(mouseX, mouseY, posX, posY + 1 + offset, posX + 75, posY + 12.5 + offset)) {
-            if (mouseButton == 1 || mouseButton == 0) {
-
-                selectedCategory = Category.COMBAT;
-
+        /*
+        int cpoffset = 0;
+        for (Category c : Category.values()) {
+            if (isInside(mouseX, mouseY, posX, posY + 1, posX + cpoffset, posY + 12.5)) {
                 if (mouseButton == 1) {
-                    if (!openedCombat) {
-                        openedCombat = true;
-                    } else if (openedCombat) {
-                        openedCombat = false;
-                    }
+
+                    c.toggle();
+
+                    Main.sendMessage(c.name);
                 }
             }
+
+            cpoffset += 80;
         }
 
-        //Exploit
-        if (isInside(mouseX, mouseY, posX + 80, posY + 1 + offset, posX + 155, posY + 12.5 + offset)) {
-            if (mouseButton == 1 || mouseButton == 0) {
-
-                selectedCategory = Category.EXPLOIT;
-
-                if (mouseButton == 1) {
-                    if (!openedExploit) {
-                        openedExploit = true;
-                    } else if (openedExploit) {
-                        openedExploit = false;
-                    }
-                }
-            }
-        }
-
-        //Render
-        if (isInside(mouseX, mouseY, posX + 155, posY + 1 + offset, posX + 235, posY + 12.5 + offset)) {
-            if (mouseButton == 1 || mouseButton == 0) {
-
-                selectedCategory = Category.RENDER;
-
-
-                if (mouseButton == 1) {
-                    if (!openedRender) {
-                        openedRender = true;
-                    } else if (openedRender) {
-                        openedRender = false;
-                    }
-                }
-            }
-        }
-
-        //Movement
-        if (isInside(mouseX, mouseY, posX + 235, posY + 1 + offset, posX + 315, posY + 12.5 + offset)) {
-            if (mouseButton == 1 || mouseButton == 0) {
-
-                selectedCategory = Category.MOVEMENT;
-
-                if (mouseButton == 1) {
-                    if (!openedMovement) {
-                        openedMovement = true;
-                    } else if (openedMovement) {
-                        openedMovement = false;
-                    }
-                }
-            }
-        }
-
-        //Player
-        if (isInside(mouseX, mouseY, posX + 315, posY + 1 + offset, posX + 395, posY + 12.5 + offset)) {
-            if (mouseButton == 1 || mouseButton == 0) {
-
-                selectedCategory = Category.PLAYER;
-
-                if (mouseButton == 1) {
-                    if (!openedPlayer) {
-                        openedPlayer = true;
-                    } else if (openedPlayer) {
-                        openedPlayer = false;
-                    }
-                }
-            }
-        }
-
-        //Misc
-        if (isInside(mouseX, mouseY, posX + 395, posY + 1 + offset, posX + 475, posY + 12.5 + offset)) {
-            if (mouseButton == 1 || mouseButton == 0) {
-
-                selectedCategory = Category.MISC;
-
-                if (mouseButton == 1) {
-                    if (!openedMisc) {
-                        openedMisc = true;
-                    } else if (openedMisc) {
-                        openedMisc = false;
-                    }
-                }
-            }
-        }
-
-        int offY = 0;
+         */
 
         //Settings stuff
-
         if (selectedModule == null) return;
+
+        int offY = 0;
 
         for (Setting setting : selectedModule.settings) {
             if (isInside(mouseX, mouseY, (int) (posX2), (int) (posY2 + 35 + offY), (int) (posX2 + 150), (int) (posY2 + 35 + 17.5 + offY))) {
@@ -455,14 +216,22 @@ public class ClickGui extends GuiScreen {
                         ((ModeSetting) setting).cycle();
                     } else if (setting instanceof NumberSetting) {
 
+                        double settingValue = ((NumberSetting) setting).getValue();
+                        float minx = (float) posX2;
+                        float maxx = (float) posX2 + 150;
+
+                        if (mouseX <= minx) {
+                            ((NumberSetting) setting).setValue(((NumberSetting) setting).getMinimum());
+                        }
+
+                        if (mouseX >= maxx) {
+                            ((NumberSetting) setting).setValue(((NumberSetting) setting).getMaximum());
+                        }
                     } else {
                         Main.sendMessage("?!");
                     }
                 }
 
-                if ((mouseButton == 0 || mouseButton == 1) && setting instanceof NumberSetting) {
-                    listeningForNumericInput = true;
-                }
             }
             offY += 17.5;
         }
@@ -479,11 +248,7 @@ public class ClickGui extends GuiScreen {
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
 
-        if (selectedModule == null) {
-            return;
-        }
-
-        if (keyCode <= 0) {
+        if (selectedModule == null || keyCode <= 0) {
             return;
         }
 
@@ -495,15 +260,6 @@ public class ClickGui extends GuiScreen {
                 keyCode = 0;
                 selectedModule.setKey(keyCode);
                 listeningForKey = false;
-            }
-        }
-
-        if (listeningForNumericInput) {
-            for (Setting setting : selectedModule.settings) {
-                if (setting instanceof NumberSetting) {
-                    setting.value = Integer.parseInt(keyCode < 256 ? Keyboard.getKeyName(keyCode) : String.format(String.valueOf((char)(keyCode - 256)).toUpperCase(Locale.ROOT)));
-                    listeningForNumericInput = false;
-                }
             }
         }
     }
@@ -518,7 +274,6 @@ public class ClickGui extends GuiScreen {
         super.initGui();
 
         dragging = false;
-        dragging2 = false;
     }
 
     @Override
@@ -530,13 +285,4 @@ public class ClickGui extends GuiScreen {
     public boolean isInside(int mouseX, int mouseY, double x, double y, double x2, double y2) {
         return (mouseX > x && mouseX < x2) && (mouseY > y && mouseY < y2);
     }
-
-    public boolean isInside2(int mouseX, int mouseY, double x, double y, double x2, double y2) {
-        return (mouseX > x && mouseX < x2) && (mouseY > y && mouseY < y2);
-    }
-
-    public ScaledResolution getScaledRes() {
-        return new ScaledResolution(Minecraft.getMinecraft());
-    }
-
 }

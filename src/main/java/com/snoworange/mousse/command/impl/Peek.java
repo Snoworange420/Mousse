@@ -10,6 +10,5 @@ public class Peek extends Command {
     @Override
     public void onCommand(String[] args, String command) {
         Main.moduleManager.getModule("ShulkerPeek").toggle();
-        Main.sendMessage("Opened shulker box.");
     }
 }

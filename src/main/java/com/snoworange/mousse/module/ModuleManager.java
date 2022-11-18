@@ -32,7 +32,7 @@ public class ModuleManager {
         modules.add(new FastAura());
         modules.add(new AutoAuto32k());
         modules.add(new Grab32k());
-        //modules.add(new SelfBow());
+        modules.add(new SelfBow());
         modules.add(new Auto32k2019());
 
         //EXPLOIT

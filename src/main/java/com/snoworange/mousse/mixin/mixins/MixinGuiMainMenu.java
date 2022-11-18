@@ -14,6 +14,6 @@ public class MixinGuiMainMenu extends GuiScreen {
     @Inject(method = {"drawScreen"}, at = {@At("TAIL")}, cancellable = true)
     public void drawText(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         FontRenderer fr = mc.fontRenderer;
-        fr.drawStringWithShadow(Main.NAME + " by Jonakip, Snow_orange__ & Huub", 2, 12, -1);
+        fr.drawStringWithShadow(Main.NAME + " by Jonakip, Snoworange & Huub", 2, 12, -1);
     }
 }

@@ -16,6 +16,7 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.ContainerDispenser;
 import net.minecraft.inventory.ContainerHopper;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemAir;
 import net.minecraft.item.ItemShulkerBox;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketEntityAction;
@@ -212,6 +213,21 @@ public class Auto32k2019 extends Module {
                                 break;
                             }
                         }
+                    }
+
+                    int airindex = -1;
+
+                    for (int i = 0; i < 9; i++) {
+
+                        ItemStack itemStack = mc.player.inventory.mainInventory.get(i);
+
+                        if (itemStack.getItem() instanceof ItemAir) {
+                            airindex = i;
+                        }
+                    }
+
+                    if (airindex != -1) {
+                        update(airindex);
                     }
 
                     if (enchantedSwordIndex != -1) {
