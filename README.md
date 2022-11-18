@@ -29,8 +29,7 @@ How do I...
 
 <details>
   <summary>... fix your skill issue?</summary>
-
-> THE SKILL ISSUE IS UNSTOPPABLE
+> You don't.
 
 </details>
 
