@@ -1,9 +1,12 @@
 ## Mousse
 An advanced utility mod, aimed at use in Minecraft 1.12.2 anarchy servers.
 
-![minecraft](https://img.shields.io/badge/Minecraft-1.12.2-blue)
+![minecraft](https://img.shields.io/badge/Minecraft-1.12.2-yellowgreen)
 ![minecraft](https://img.shields.io/badge/Keybind-none-pink)
+![GitHub all releases](https://img.shields.io/github/downloads/Snoworange420/Mousse/total?color=seagreen)
+![GitHub workflow status](https://img.shields.io/github/workflow/status/lambda-client/lambda/gradle_build?logo=gradle)
 ![Lines of code](https://img.shields.io/tokei/lines/github/Snoworange420/Mousse?color=lightcoral&label=Lines%20of%20code)
+![GitHub repo size](https://img.shields.io/github/repo-size/Snoworange420/Mousse)
 [![discord](https://img.shields.io/badge/Discord-Invite-8080c0)](https://discord.gg/Xp4ZZy9Ah3)
 
 ## FAQ
@@ -24,22 +27,32 @@ How do I...
 
 </details>
 
+<details>
+  <summary>... fix your skill issue?</summary>
+
+> THE SKILL ISSUE IS UNSTOPPABLE
+
+</details>
+
 ## Info
 Everything that is skidded for now:
 
-- Guinness Hopperrange idea
+- Guinness Hopperradius idea
 - Pesudo client's 32k Grab, Auto Auto32k, Silent swap Auto32k and 32kAura idea
 - Utils
 - Commands from postman
 
 ## Comment
-Most of the code is skidded/copyed from open-source clients. The client developing is in progress.
-*I recommend to not use this client as a instance!!1!*
+- Since I have coded some 32k modules I will now focus on bug fixing and add "casual" modules (e.g. Speed, KillAura, AutoTotem..)
+- Most of the code is skidded/copyed from open-source clients. The client developing is in progress.
+*Since some code is messy I don't recommend to use this client as a instance!!!!*
 
-## Credits
+## Huge thanks to:
 - My dad and my mom for my balls
 - Minecraft and MinecraftForge (without those boiz we can't make client)
 - Pseudonymous000 for helping me out with client developing
 - Minnced for DiscordRPC
 - SpongePowored for mixins
 - nk2ywsa / sheplet for inspiration to make this client
+> ### Disclaimer
+> This software does not contain any copyrighted Minecraft code. This is a Forge utility mod, only meant for use in anarchy environments. Do not use without permission of server administration.
