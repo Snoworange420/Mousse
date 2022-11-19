@@ -29,6 +29,7 @@ How do I...
 
 <details>
   <summary>... fix your skill issue?</summary>
+
 > You don't.
 
 </details>
