@@ -54,5 +54,6 @@ Everything that is skidded for now:
 - Minnced for DiscordRPC
 - SpongePowored for mixins
 - nk2ywsa / sheplet for inspiration to make this client
-> ### Disclaimer
-> This software does not contain any copyrighted Minecraft code. This is a Forge utility mod, only meant for use in anarchy environments. Do not use without permission of server administration.
+
+## Disclaimer
+This software does not contain any copyrighted Minecraft code. This is a Forge utility mod, only meant for use in anarchy environments. Do not use without permission of server administration.
