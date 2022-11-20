@@ -57,3 +57,5 @@ Everything that is skidded for now:
 
 ## Disclaimer
 This software does not contain any copyrighted Minecraft code. This is a Forge utility mod, only meant for use in anarchy environments. Do not use without permission of server administration.
+
+(use it where-ever it's open sourced idiot)
