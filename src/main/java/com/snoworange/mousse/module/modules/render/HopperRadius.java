@@ -9,6 +9,7 @@ import com.snoworange.mousse.module.modules.exploit.XCarry;
 import com.snoworange.mousse.setting.settings.NumberSetting;
 import com.snoworange.mousse.util.render.ColorUtils;
 import com.snoworange.mousse.util.render.RenderUtils2;
+import com.snoworange.mousse.util.render.RenderUtils3;
 import net.minecraft.block.BlockHopper;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +18,7 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.server.SPacketCloseWindow;
 import net.minecraft.network.play.server.SPacketOpenWindow;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -32,13 +34,14 @@ public class HopperRadius extends Module {
     NumberSetting height;
     public BlockPos oldHopperPos;
     public double radius;
+    public double hitradius;
     public BlockPos hopperPos;
     public double wallHeight;
 
     @Override
     public void init() {
         super.init();
-        height = new NumberSetting("Height", 1, 0, 6, 0.1);
+        height = new NumberSetting("Height", 0.5, 0, 6, 0.1);
     }
 
     @Override
@@ -49,6 +52,8 @@ public class HopperRadius extends Module {
     @Override
     public void onDisable() {
         super.onDisable();
+
+        this.hopperPos = null;
     }
 
     @SubscribeEvent
@@ -60,7 +65,8 @@ public class HopperRadius extends Module {
             if (this.hopperPos == null) {
                 return;
             }
-            if (!(mc.world.getBlockState(this.hopperPos).getBlock() instanceof BlockHopper) || mc.player.getDistanceSq(this.hopperPos) > Double.longBitsToDouble(Double.doubleToLongBits(0.925710585628769) ^ 0x7FBDDF6BCE5AC52FL)) {
+
+            if (!(mc.world.getBlockState(this.hopperPos).getBlock() instanceof BlockHopper) || mc.player.getDistanceSqToCenter(this.hopperPos) > 65.0) {
                 this.hopperPos = null;
             }
         }
@@ -91,7 +97,7 @@ public class HopperRadius extends Module {
         if (this.toggled) {
 
             if (mc.world == null || mc.player == null) return;
-            
+
             if (!(event.getPacket() instanceof SPacketCloseWindow)) {
                 if (event.getPacket() instanceof SPacketOpenWindow) {
                     if (((SPacketOpenWindow) event.getPacket()).getWindowTitle().getUnformattedText().equalsIgnoreCase("Item Hopper")) {
@@ -107,30 +113,46 @@ public class HopperRadius extends Module {
     public void onRender3d(RenderWorldLastEvent event) {
 
         if (this.toggled) {
-            
+
             if (mc.world == null || mc.player == null) return;
 
             if (this.wallHeight < (double) height.getValue()) {
-                this.wallHeight += Double.longBitsToDouble(Double.doubleToLongBits(3751.2945874163925) ^ 0x7FD9347793877A0BL) * (double) height.getValue();
+                this.wallHeight += 0.005 * (double) height.getValue();
             } else if (this.wallHeight > (double) height.getValue()) {
-                this.wallHeight -= Double.longBitsToDouble(Double.doubleToLongBits(114.68668265750983) ^ 0x7FD8D113DC7F3B77L);
+                this.wallHeight -= 0.01;
             }
+
             if (this.hopperPos != null) {
-                RenderUtils2.drawCircle(this.hopperPos, Double.longBitsToDouble(Double.doubleToLongBits(0.14553988619673233) ^ 0x7FE2A10D0DBD4061L), this.wallHeight, new Color(ColorUtils.BESTCOLOR(0, 255)), new Color(ColorUtils.BESTCOLOR(10, 255)));
+                RenderUtils2.drawCircle(this.hopperPos, 7.5, this.wallHeight, new Color(131, 141, 59), new Color(131, 141, 59));
+                RenderUtils3.drawCircle(this.hopperPos, 7.5 + 7, this.wallHeight, new Color(131, 141, 59), new Color(131, 141, 59));
+
                 this.oldHopperPos = this.hopperPos;
-                this.radius = Double.longBitsToDouble(Double.doubleToLongBits(0.14070361133713452) ^ 0x7FE20293708FA091L);
+
+                this.radius = 7.5;
+                this.hitradius = radius + 7;
+
                 return;
             }
+
             if (this.hopperPos == null && this.oldHopperPos != null) {
-                RenderUtils2.drawCircle(this.oldHopperPos, this.radius, this.wallHeight, new Color(ColorUtils.BESTCOLOR(0, 255)), new Color(ColorUtils.BESTCOLOR(10, 255)));
-                if (this.wallHeight > Double.longBitsToDouble(Double.doubleToLongBits(1.1989844897406259E308) ^ 0x7FE557B6C1188A7BL)) {
-                    this.wallHeight -= Double.longBitsToDouble(Double.doubleToLongBits(219.7551656050837) ^ 0x7FD2E1B3C896855BL);
+                RenderUtils2.drawCircle(this.oldHopperPos, this.radius, this.wallHeight, new Color(131, 141, 59), new Color(131, 141, 59));
+                RenderUtils3.drawCircle(this.oldHopperPos, this.hitradius, this.wallHeight, new Color(131, 141, 59), new Color(131, 141, 59));
+
+                if (this.wallHeight > 0) {
+                    this.wallHeight -= 0.1;
                     return;
                 }
-                if (this.radius > Double.longBitsToDouble(Double.doubleToLongBits(6.522680943073321E306) ^ 0x7FA293C429F2655FL)) {
-                    this.radius -= Double.longBitsToDouble(Double.doubleToLongBits(90.1592080629349) ^ 0x7FEF13A9EE9A7DBDL);
+
+                if (this.radius > 0) {
+                    this.radius -= 0.1;
                 } else {
-                    this.radius = Double.longBitsToDouble(Double.doubleToLongBits(7.96568863695466E307) ^ 0x7FDC5BD9D9AD2AC5L);
+                    this.radius = 0;
+                }
+
+                if (this.hitradius > 0) {
+                    this.hitradius -= 0.2;
+                } else {
+                    this.hitradius = 0;
                 }
             }
         }

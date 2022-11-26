@@ -2,7 +2,6 @@ package com.snoworange.mousse;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import com.snoworange.mousse.command.CommandManager;
-import com.snoworange.mousse.event.ForgeEventHandeler;
 import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.module.ModuleManager;
 import com.snoworange.mousse.ui.ClickGui;
@@ -24,7 +23,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 
-@Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION)
+@Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION, acceptedMinecraftVersions = "[1.12.2]")
 public class Main {
 
     public static ModuleManager moduleManager;
@@ -33,13 +32,12 @@ public class Main {
     public static ThemeManager themeManager;
     public static CommandManager commandManager;
     public static ClickGui clickgui;
-    public static ForgeEventHandeler forgeEventHandeler;
 
     //
 
     public static final String MOD_ID = "mousse";
     public static final String NAME = "Mousse";
-    public static final String VERSION = "v0.6.0";
+    public static final String VERSION = "v0.6.2";
 
     public static Minecraft mc = Minecraft.getMinecraft();
 
@@ -65,7 +63,6 @@ public class Main {
         hud = new Hud();
         clickgui = new ClickGui();
         themeManager = new ThemeManager();
-        forgeEventHandeler = new ForgeEventHandeler();
 
         ClickGUI = new KeyBinding("ClickGUI", Keyboard.KEY_NONE, "Mousse");
         ClientRegistry.registerKeyBinding(ClickGUI);

@@ -23,8 +23,10 @@ public class DebugModule extends Module {
     @Override
     public void onTick() {
         Main.sendMessage("hello from debug module!");
-        Main.sendMessage("1");
+    }
 
-        disable();
+    @Override
+    public void onUpdate() {
+        Main.sendMessage("update");
     }
 }

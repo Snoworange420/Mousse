@@ -29,7 +29,7 @@ public class ElytraFly extends Module {
     public void init() {
         mode = new ModeSetting("Elytra Mode", "VanillaBoost", "VanillaBoost", "ControlVelocity", "ControlFreeze", "Packet");
         autoTakeoff = new BooleanSetting("Auto Takeoff", true);
-        speed = new NumberSetting("Speed", 0, 1, 20, 0.1);
+        speed = new NumberSetting("Speed", 1, 1, 20, 0.1);
         super.init();
 
         addSetting(mode, autoTakeoff, speed);
@@ -52,6 +52,9 @@ public class ElytraFly extends Module {
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event) {
         if (this.toggled) {
+
+            if (mc.player == null || mc.world == null) return;
+
             if (autoTakeoff.enable) {
 
                 if (!mc.player.onGround) {

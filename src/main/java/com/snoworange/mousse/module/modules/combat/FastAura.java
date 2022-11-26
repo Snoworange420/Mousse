@@ -2,22 +2,18 @@ package com.snoworange.mousse.module.modules.combat;
 
 import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
-import com.snoworange.mousse.module.modules.aura.*;
 import com.snoworange.mousse.setting.settings.BooleanSetting;
 import com.snoworange.mousse.setting.settings.ModeSetting;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemAir;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class FastAura extends Module {
 
@@ -73,7 +69,7 @@ public class FastAura extends Module {
 
             if (superWeaponIndex != -1) {
                 for (EntityPlayer target : mc.world.playerEntities) {
-                    if (!target.getName().equals(mc.getSession().getUsername()) && mc.player.getDistance(target) <= 7 && target.getHealth() > 0 && !target.isDead) {
+                    if (!target.getName().equals(mc.getSession().getUsername()) && mc.player.getDistance(target) <= 8.2 && target.getHealth() > 0 && !target.isDead) {
 
                         AutoEz.targets.put(target.getName(), (EntityPlayer) target);
 
@@ -84,7 +80,7 @@ public class FastAura extends Module {
                                 mc.player.connection.sendPacket(new CPacketHeldItemChange(superWeaponIndex));
                                 mc.playerController.updateController();
 
-                                attack(target, attackMode);
+                                mc.player.connection.sendPacket(new CPacketUseEntity(target));
 
                                 mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
                                 mc.player.swingArm(EnumHand.MAIN_HAND);
@@ -97,7 +93,7 @@ public class FastAura extends Module {
 
                             if (crItemStack.getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, crItemStack) >= Short.MAX_VALUE) {
 
-                                attack(target, attackMode);
+                                mc.player.connection.sendPacket(new CPacketUseEntity(target));
 
                                 mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
                                 mc.player.swingArm(EnumHand.MAIN_HAND);
@@ -108,14 +104,5 @@ public class FastAura extends Module {
                 }
             }
         }
-    }
-
-    //Does this work accutually?...
-    public void attack(EntityPlayer target, ModeSetting attackMode) {
-        Attack1.attack(target, attackMode);
-        Attack2.attack(target, attackMode);
-        Attack3.attack(target, attackMode);
-        Attack4.attack(target, attackMode);
-        Attack5.attack(target, attackMode);
     }
 }

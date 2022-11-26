@@ -1,10 +1,12 @@
 package com.snoworange.mousse.mixin.mixins;
 
 import com.snoworange.mousse.Main;
+import com.snoworange.mousse.module.modules.render.ShulkerPreview;
 import com.snoworange.mousse.util.render.ParticleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,6 +40,13 @@ public class MixinGuiScreen {
                 final int height = scaledResolution.getScaledHeight();
                 ParticleUtils.drawParticles(Mouse.getX() * width / Minecraft.getMinecraft().displayWidth, height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1);
             }
+        }
+    }
+
+    @Inject(method = { "renderToolTip" }, at = { @At("HEAD") }, cancellable = true)
+    public void renderToolTip(final ItemStack itemStack, final int x, final int y, final CallbackInfo ci) {
+        if (Main.moduleManager.getModule("ShulkerPreview").isEnabled()) {
+            ShulkerPreview.renderToolTip(itemStack, x, y, ci);
         }
     }
 }

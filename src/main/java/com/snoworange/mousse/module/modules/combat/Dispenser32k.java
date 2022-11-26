@@ -85,10 +85,10 @@ public class Dispenser32k extends Module {
         redstoneDelay = new NumberSetting("Redstone Place Delay", null, 0, 0, 20, 1);
         fastHopper = new BooleanSetting("Fast Hopper Place", true);
         allowVertical = new BooleanSetting("Allow Vertical Place", true);
-        renderCircle = new BooleanSetting("Render Hopper Radius", true);
+        renderCircle = new BooleanSetting("Render Hopper Radius", false);
         silentSwap = new BooleanSetting("Silent Swap", true);
         swapToSuperweaponIndex = new BooleanSetting("Select 32k Slot", true);
-        speed = new ModeSetting("Speed", "Safe", "Safe", "2-Tick");
+        speed = new ModeSetting("Speed", "2-Tick", "Safe", "2-Tick");
         autoDisable = new BooleanSetting("Auto Disable", true);
         openHopperWithPacket = new BooleanSetting("Open Hopper with Packet", true);
         blockShulker = new BooleanSetting("Block Shulker", false);
@@ -125,8 +125,8 @@ public class Dispenser32k extends Module {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event) {
-        if (this.toggled) {
+    public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+        if (this.toggled && event.getEntityLiving() instanceof EntityPlayer) {
 
             if (mc.world == null || mc.player == null) return;
 
@@ -488,7 +488,7 @@ public class Dispenser32k extends Module {
             }
 
             //if mode is 2-Tick places instantly redstone block quickly after the shulker check
-            if (!speed.is("2-Tick") && redstonePos != null && !placedRedstone) {
+            if (speed.is("2-Tick") && redstonePos != null && !placedRedstone) {
 
                 //Valid placement check
                 if (mc.world.getBlockState(redstonePos).getBlock() instanceof BlockAir && (mc.world.getBlockState(redstonePos.down()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.north()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.east()).getBlock() instanceof BlockDispenser || mc.world.getBlockState(redstonePos.south()).getBlock() instanceof BlockDispenser) || mc.world.getBlockState(redstonePos.west()).getBlock() instanceof BlockDispenser) {
@@ -497,14 +497,13 @@ public class Dispenser32k extends Module {
                     mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, mc.player.rotationPitch, mc.player.onGround)); //Sends rotation packet to reset the modified rotation yaw in dispenser placing phase
                     mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
 
-                    if (silentSwap.enable) {
-                        mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
-                        mc.playerController.updateController();
-                    } else {
-                        mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+                    mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+
+                    if (!silentSwap.enable) {
                         mc.player.inventory.currentItem = redstoneIndex;
-                        mc.playerController.updateController();
                     }
+
+                    mc.playerController.updateController();
 
                     placeBlock(redstonePos);
 
@@ -527,14 +526,13 @@ public class Dispenser32k extends Module {
 
                     mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
 
-                    if (silentSwap.enable) {
-                        mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
-                        mc.playerController.updateController();
-                    } else {
-                        mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+                    mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+
+                    if (!silentSwap.enable) {
                         mc.player.inventory.currentItem = redstoneIndex;
-                        mc.playerController.updateController();
                     }
+
+                    mc.playerController.updateController();
 
                     placeBlock(redstonePos);
 
@@ -559,14 +557,13 @@ public class Dispenser32k extends Module {
                         ;
                         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
 
-                        if (silentSwap.enable) {
-                            mc.player.connection.sendPacket(new CPacketHeldItemChange(hopperIndex));
-                            mc.playerController.updateController();
-                        } else {
-                            mc.player.connection.sendPacket(new CPacketHeldItemChange(hopperIndex));
+                        mc.player.connection.sendPacket(new CPacketHeldItemChange(hopperIndex));
+
+                        if (!silentSwap.enable) {
                             mc.player.inventory.currentItem = hopperIndex;
-                            mc.playerController.updateController();
                         }
+
+                        mc.playerController.updateController();
 
                         placeBlock(closestHopperPos);
 
@@ -608,14 +605,13 @@ public class Dispenser32k extends Module {
                             Main.sendMessage("Shulker box detected!");
                             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
 
-                            if (silentSwap.enable) {
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(hopperIndex));
-                                mc.playerController.updateController();
-                            } else {
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(hopperIndex));
+                            mc.player.connection.sendPacket(new CPacketHeldItemChange(hopperIndex));
+
+                            if (!silentSwap.enable) {
                                 mc.player.inventory.currentItem = hopperIndex;
-                                mc.playerController.updateController();
                             }
+
+                            mc.playerController.updateController();
 
                             placeBlock(closestHopperPos);
 
@@ -761,14 +757,14 @@ public class Dispenser32k extends Module {
 
         //Place obby (forced)
         if (mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir) {
-            if (silentSwap.enable) {
-                mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
-                mc.playerController.updateController();
-            } else {
-                mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
+
+            mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
+
+            if (!silentSwap.enable) {
                 mc.player.inventory.currentItem = obsidianIndex;
-                mc.playerController.updateController();
             }
+
+            mc.playerController.updateController();
 
             mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos, EnumFacing.UP, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), EnumHand.MAIN_HAND);
             mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
@@ -793,14 +789,13 @@ public class Dispenser32k extends Module {
             yaw = 91.0f;
         }
 
-        if (silentSwap.enable) {
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
-            mc.playerController.updateController();
-        } else {
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+        mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+
+        if (!silentSwap.enable) {
             mc.player.inventory.currentItem = dispenserIndex;
-            mc.playerController.updateController();
         }
+
+        mc.playerController.updateController();
 
         //Sends rotation packet to rotate dispenser
         mc.player.connection.sendPacket(new CPacketPlayer.Rotation(yaw, 0, mc.player.onGround));
@@ -829,14 +824,13 @@ public class Dispenser32k extends Module {
 
         //Update inventory slots to dispenser
 
-        if (silentSwap.enable) {
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
-            mc.playerController.updateController();
-        } else {
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+        mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+
+        if (!silentSwap.enable) {
             mc.player.inventory.currentItem = dispenserIndex;
-            mc.playerController.updateController();
         }
+
+        mc.playerController.updateController();
 
         //Place dispenser
         placeBlock(blockPos);

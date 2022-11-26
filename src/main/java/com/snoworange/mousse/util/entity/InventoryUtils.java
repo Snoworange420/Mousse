@@ -1,12 +1,16 @@
 package com.snoworange.mousse.util.entity;
 
+import com.snoworange.mousse.Main;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -153,5 +157,17 @@ public class InventoryUtils {
         String tool = state.getBlock().getHarvestTool(state);
         if(tool == null) return false;
         return Minecraft.getMinecraft().player.inventory.getStackInSlot(slot).getItem().getHarvestLevel(Minecraft.getMinecraft().player.inventory.getStackInSlot(slot), tool, null, null) >= state.getBlock().getHarvestLevel(state);
+    }
+
+    public static boolean is32k(ItemStack stack) {
+        if (stack.getTagCompound() == null) {
+            return false;
+        }
+
+        if (stack.getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, stack) >= Short.MAX_VALUE) {
+            return true;
+        }
+
+        return false;
     }
 }

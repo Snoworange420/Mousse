@@ -123,7 +123,19 @@ public abstract class Module {
 
     }
 
+    public void onFastTick() {
+
+    }
+
     public void onUpdate() {
+
+    }
+
+    public void onRender2d() {
+
+    }
+
+    public void onRender3d() {
 
     }
 
