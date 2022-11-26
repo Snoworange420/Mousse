@@ -37,7 +37,8 @@ How do I...
 ## Info
 Everything that is skidded for now:
 
-- Guinness Hopperradius idea
+- Rusherhack's ShulkerPreview idea
+- Guinness and Ruby's Hopperradius idea
 - Pesudo client's 32k Grab, Auto Auto32k, Silent swap Auto32k and 32kAura idea
 - Utils
 - Commands from postman
