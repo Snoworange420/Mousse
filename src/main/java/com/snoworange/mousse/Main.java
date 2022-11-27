@@ -29,6 +29,7 @@ public class Main {
     public static ModuleManager moduleManager;
     public static Hud hud;
     public static KeyBinding ClickGUI;
+    public static KeyBinding ShulkerPeek;
     public static ThemeManager themeManager;
     public static CommandManager commandManager;
     public static ClickGui clickgui;
@@ -37,7 +38,7 @@ public class Main {
 
     public static final String MOD_ID = "mousse";
     public static final String NAME = "Mousse";
-    public static final String VERSION = "v0.6.2";
+    public static final String VERSION = "v0.6.3";
 
     public static Minecraft mc = Minecraft.getMinecraft();
 
@@ -65,7 +66,10 @@ public class Main {
         themeManager = new ThemeManager();
 
         ClickGUI = new KeyBinding("ClickGUI", Keyboard.KEY_NONE, "Mousse");
+        ShulkerPeek = new KeyBinding("ShulkerPreview Peek Binding", Keyboard.KEY_RCONTROL, "Mousse");
+
         ClientRegistry.registerKeyBinding(ClickGUI);
+        ClientRegistry.registerKeyBinding(ShulkerPeek);
 
         this.initFilesystem();
     }

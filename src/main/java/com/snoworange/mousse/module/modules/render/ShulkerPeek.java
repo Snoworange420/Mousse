@@ -3,13 +3,22 @@ package com.snoworange.mousse.module.modules.render;
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockDispenser;
+import net.minecraft.block.BlockDropper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiHopper;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiDispenser;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemShulkerBox;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,10 +34,10 @@ public class ShulkerPeek extends Module {
         super("ShulkerPeek", "", Category.RENDER, 1);
     }
 
-    private static InventoryBasic getFromItemNBT(NBTTagCompound tag) {
+    public static InventoryBasic getFromItemNBT(NBTTagCompound tag) {
 
-        NonNullList items = NonNullList.withSize((int)27, (Object) ItemStack.EMPTY);
-        String customName = "Shulker Box";
+        NonNullList items = NonNullList.withSize((int) 27, (Object) ItemStack.EMPTY);
+        String customName = "";
         if (tag.hasKey("Items", 9)) {
             ItemStackHelper.loadAllItems((NBTTagCompound) tag, (NonNullList) items);
         }
@@ -55,30 +64,28 @@ public class ShulkerPeek extends Module {
     @SubscribeEvent
     public void onUpdate(LivingEvent.LivingUpdateEvent event) {
         if (this.toggled) {
-            ItemStack stack = null;
-
-            if (mc.player.getHeldItemMainhand() == ItemStack.EMPTY) {
-                if (!mc.player.getHeldItemOffhand().isEmpty() && mc.player.getHeldItemOffhand().getItem() instanceof ItemShulkerBox) {
-                    stack = mc.player.getHeldItemOffhand();
-                } else {
-                    Main.sendMessage("Coudn't find shulker box in your hands!");
-                }
-            } else {
-                stack = mc.player.getHeldItemMainhand();
-            }
+            ItemStack stack = mc.player.getHeldItemMainhand();
 
             //Open shulker box
-            if (stack != null && !stack.isEmpty() && stack.getItem() instanceof ItemShulkerBox) {
-                if (stack.hasTagCompound()) {
-                    mc.displayGuiScreen((GuiScreen) new GuiChest((IInventory) mc.player.inventory, (IInventory) getFromItemNBT(stack.getTagCompound().getCompoundTag("BlockEntityTag"))));
-                } else {
-                    mc.displayGuiScreen((GuiScreen) new GuiChest((IInventory) mc.player.inventory, (IInventory) new InventoryBasic("Shulker Box", true, 27)));
+            if (!stack.isEmpty()) {
+                if (stack.hasTagCompound() && stack.getTagCompound() != null)
+                {
+                    if ((stack.getItem() instanceof ItemShulkerBox) || (stack.getItem().equals(Item.getItemFromBlock(Blocks.CHEST)))) {
+                        mc.displayGuiScreen((GuiScreen) new GuiChest((IInventory) mc.player.inventory, (IInventory) getFromItemNBT(stack.getTagCompound().getCompoundTag("BlockEntityTag"))));
+                    } else if (stack.getItem().equals(Item.getItemFromBlock(Blocks.DISPENSER)) || stack.getItem().equals(Item.getItemFromBlock(Blocks.DROPPER))) {
+                        mc.displayGuiScreen((GuiScreen) new GuiDispenser((InventoryPlayer) mc.player.inventory, (IInventory) getFromItemNBT(stack.getTagCompound().getCompoundTag("BlockEntityTag"))));
+                    } else if (stack.getItem().equals(Item.getItemFromBlock(Blocks.HOPPER))) {
+                        mc.displayGuiScreen((GuiScreen) new GuiHopper((InventoryPlayer) mc.player.inventory, (IInventory) getFromItemNBT(stack.getTagCompound().getCompoundTag("BlockEntityTag"))));
+                    }
                 }
 
+                /*
                 Main.sendMessage("Opened shulker box.");
                 mc.world.playSound(mc.player, mc.player.posX, mc.player.posY, mc.player.posZ, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5f, 1.0f);
+
+                 */
             } else {
-                Main.sendMessage("Coudn't find shulker box in your hands!");
+                Main.sendMessage("Coudn't find any container in your hands!");
             }
 
             disable();

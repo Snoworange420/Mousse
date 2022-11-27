@@ -9,6 +9,7 @@ import com.snoworange.mousse.module.modules.misc.*;
 import com.snoworange.mousse.module.modules.movement.*;
 import com.snoworange.mousse.module.modules.player.*;
 import com.snoworange.mousse.module.modules.render.*;
+import com.snoworange.mousse.module.modules.system.HUD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,6 +47,7 @@ public class ModuleManager {
         modules.add(new Notify32k());
         //modules.add(new Dispenser32kRewrite());
         modules.add(new ThreadAura());
+        modules.add(new Info32k());
 
         //EXPLOIT
         modules.add(new SecretClose());
@@ -63,6 +65,7 @@ public class ModuleManager {
         modules.add(new ReverseStep());
         modules.add(new ShiftSpam());
         modules.add(new IceSpeed());
+        modules.add(new Rubberband());
 
         //PLAYER
         modules.add(new NoFall());
@@ -89,6 +92,10 @@ public class ModuleManager {
         modules.add(new ShulkerPreview());
 
         //WORK IN PROGRESS
+
+
+        //System
+        modules.add(new HUD());
 
         instance = this;
     }

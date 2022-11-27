@@ -1,21 +1,29 @@
 package com.snoworange.mousse.module.modules.render;
 
+import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.ItemShulkerBox;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class ShulkerPreview extends Module {
 
-    private static final ResourceLocation SHULKER_GUI_TEXTURE = new ResourceLocation("textures/27slots.png");;
+    private static final ResourceLocation SHULKER_GUI_TEXTURE = new ResourceLocation("textures/27slots.png");
 
     public ShulkerPreview() {
         super("ShulkerPreview", "ur dad", Category.RENDER);
@@ -30,10 +38,6 @@ public class ShulkerPreview extends Module {
     public void onDisable() {
         super.onDisable();
     }
-    public static int itemX = 16;
-    public static int itemY = -98;
-    public static int itemTextureX = 8;
-    public static int itemTextureY = -97;
 
     public static Minecraft mc = Minecraft.getMinecraft();
 
@@ -56,7 +60,7 @@ public class ShulkerPreview extends Module {
 
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 mc.getTextureManager().bindTexture(SHULKER_GUI_TEXTURE);
-                Gui.drawModalRectWithCustomSizedTexture(n + itemTextureX, n2 + itemTextureY, 0, 0, 256, 256, 256, 256);
+                Gui.drawModalRectWithCustomSizedTexture(n + 8, n2 - 97, 0, 0, 256, 256, 256, 256);
 
                 GlStateManager.enableBlend();
                 GlStateManager.enableAlpha();
@@ -67,8 +71,8 @@ public class ShulkerPreview extends Module {
 
                 for (int i = 0; i < nonnulllist.size(); ++i) {
 
-                    final int iX = n + itemX + i % 9 * 18;
-                    final int iY = n2 + itemY + ((i / 9 + 1) * 18) + 1;
+                    final int iX = n + 16 + i % 9 * 18;
+                    final int iY = n2 - 98 + ((i / 9 + 1) * 18) + 1;
 
                     final ItemStack stack = (ItemStack) nonnulllist.get(i);
                     mc.getRenderItem().renderItemAndEffectIntoGUI(stack, iX, iY);

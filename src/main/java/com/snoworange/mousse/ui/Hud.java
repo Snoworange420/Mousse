@@ -2,6 +2,8 @@ package com.snoworange.mousse.ui;
 
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.Module;
+import com.snoworange.mousse.module.modules.render.Info32k;
+import com.snoworange.mousse.module.modules.system.HUD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -39,18 +41,36 @@ public class Hud extends Gui {
         ScaledResolution sr = new ScaledResolution(mc);
         FontRenderer fr = mc.fontRenderer;
 
+        //Watermark
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            fr.drawString(Main.NAME + " " + Main.VERSION, 2, 12, 0x838d3b, true);
+            if (HUD.watermark.isEnable()) {
+                fr.drawString(Main.NAME + " " + Main.VERSION, 2, 12, 0x838d3b, true);
+            }
         }
 
+        //Arraylist
         if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            int y = 40;
-            final int[] counter = {1};
-            for (Module mod : Main.moduleManager.getModuleList()) {
-                if (!mod.getName().equalsIgnoreCase("") && mod.isToggled()) {
-                    fr.drawString(mod.getName(), 2, y, rainbow(counter[0] * 100));
-                    y += fr.FONT_HEIGHT;
-                    counter[0]++;
+            if (HUD.arraylist.isEnable()) {
+                int y = 40;
+                final int[] counter = {1};
+                for (Module mod : Main.moduleManager.getModuleList()) {
+                    if (!mod.getName().equalsIgnoreCase("") && mod.isToggled()) {
+                        fr.drawString(mod.getName(), 2, y, rainbow(counter[0] * 100));
+                        y += fr.FONT_HEIGHT;
+                        counter[0]++;
+                    }
+                }
+            }
+        }
+
+        //32k
+        if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
+            if (Main.moduleManager.getModule("32kInfo").isEnabled()) {
+
+                if (Info32k.has32k()) {
+                    fr.drawString("32k in hotbar!", 100, 12, new Color(107, 154, 69).getRGB(), false);
+                } else {
+                    fr.drawString("No 32k in hotbar!", 100, 12, new Color(222, 39, 39).getRGB(), false);
                 }
             }
         }

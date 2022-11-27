@@ -32,7 +32,7 @@ public class ClickGui extends GuiScreen {
         dragging = false;
         posX = 100;
         posY = 50;
-        posX2 = 650;
+        posX2 = 700;
         posY2 = 50;
         height = height + 200;
     }
@@ -69,6 +69,7 @@ public class ClickGui extends GuiScreen {
                     if (c.opened) {
                         Gui.drawRect((int) posX + xoffsetModules, (int) (posY + 1 + yoffsetModules), (int) (posX + 80 + xoffsetModules), (int) ((float) posY + 17.5 + yoffsetModules), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
                         mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 2.5 + xoffsetModules), (int) ((float) posY + 6.5) + yoffsetModules, new Color(170, 170, 170).getRGB());
+                        mc.fontRenderer.drawString(m.hasSettings() ? "+" : "", (int) ((float) posX + 72.5 + xoffsetModules), (int) ((float) posY + 6.5) + yoffsetModules, new Color(170, 170, 170).getRGB());
                         yoffsetModules += 17.5;
                     }
                 }

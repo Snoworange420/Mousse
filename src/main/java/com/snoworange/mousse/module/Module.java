@@ -43,6 +43,20 @@ public abstract class Module {
         init();
     }
 
+    public Module(String name, String description, Category category, int type, boolean toggled) {
+        super();
+        this.name = name;
+        this.description = description;
+        this.key = 0;
+        this.category = category;
+        this.toggled = toggled;
+        init();
+    }
+
+    public int getType() {
+        return this.type;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -77,6 +91,10 @@ public abstract class Module {
 
     public boolean isDisabled() {
         return !toggled;
+    }
+
+    public boolean hasSettings() {
+        return this.settings.size() > 0;
     }
 
     public void setToggled(boolean toggled) {

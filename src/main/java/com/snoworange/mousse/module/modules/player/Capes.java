@@ -31,7 +31,7 @@ public class Capes extends Module {
     public static final ResourceLocation SNOWORANGE_CAPE = new ResourceLocation("textures/snoworange_cape.png");
     public static final ResourceLocation JONAKIP_CAPE = new ResourceLocation("textures/jonakip_cape.png");
     public static final ResourceLocation HUUB_CAPE = new ResourceLocation("textures/huub_cape.png");
-    public static final ResourceLocation ELMO_CAPE = new ResourceLocation("textures/elmo_cape.png");
+    public static final ResourceLocation ELMO_CAPE = new ResourceLocation("textures/elmo_cape_fixed.png");
     public static final ResourceLocation PSEUDO_CAPE = new ResourceLocation("textures/pseudo_cape.png");
 
     @Override
