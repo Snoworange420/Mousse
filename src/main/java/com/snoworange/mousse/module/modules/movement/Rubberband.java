@@ -30,6 +30,9 @@ public class Rubberband extends Module {
 
     @SubscribeEvent
     public void onDisableStuff(TickEvent.ClientTickEvent event) {
+
+        if (mc.player == null || mc.world == null) return;
+
         if (end) {
             timer++;
         }

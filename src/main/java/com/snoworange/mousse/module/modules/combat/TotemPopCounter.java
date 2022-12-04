@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class TotemPopCounter extends Module {
 
     public TotemPopCounter() {
-        super("TotemPopNotify", "", Category.COMBAT);
+        super("TotemPopNotify", "btich", Category.COMBAT);
     }
 
     @Override

@@ -23,6 +23,7 @@ public class Capes extends Module {
         UUIDs.add(UUID.fromString("42069420-6969-6969-6969-420420420420")); //huu_bo
         UUIDs.add(UUID.fromString("7e31f4df-d166-44ef-9065-6231420226ab")); //HGkidudeski
         UUIDs.add(UUID.fromString("e2857f53-ffa6-468e-bc7a-9aa43c143e45")); //Pseudonymous000
+        UUIDs.add(UUID.fromString("1237b656-7fa9-4d17-94c6-86265453e5b7")); //fluffery
 
         instance = this;
     }
@@ -33,6 +34,7 @@ public class Capes extends Module {
     public static final ResourceLocation HUUB_CAPE = new ResourceLocation("textures/huub_cape.png");
     public static final ResourceLocation ELMO_CAPE = new ResourceLocation("textures/elmo_cape_fixed.png");
     public static final ResourceLocation PSEUDO_CAPE = new ResourceLocation("textures/pseudo_cape.png");
+    public static final ResourceLocation FLUFFERY_CAPE = new ResourceLocation("textures/fluffery.png");
 
     @Override
     public void onEnable() {
@@ -56,18 +58,26 @@ public class Capes extends Module {
         if (player.getUniqueID().toString().equals("fe1ad3a4-9e5d-4f68-a04c-2e74bd07df42")) {
             return SNOWORANGE_CAPE;
         }
+
         if (player.getUniqueID().toString().equals("05b09c32-fe1b-4563-bbc6-db9968070d94")) {
             return JONAKIP_CAPE;
         }
+
         if (player.getUniqueID().toString().equals("42069420-6969-6969-6969-420420420420")) {
             Main.sendMessage("Sorry Huub ik heb nog geen texture");
             return HUUB_CAPE;
         }
+
         if (player.getUniqueID().toString().equals("7e31f4df-d166-44ef-9065-6231420226ab")) {
             return ELMO_CAPE;
         }
+
         if (player.getUniqueID().toString().equals("e2857f53-ffa6-468e-bc7a-9aa43c143e45")) {
             return PSEUDO_CAPE;
+        }
+
+        if (player.getUniqueID().toString().equals("1237b656-7fa9-4d17-94c6-86265453e5b7")) {
+            return FLUFFERY_CAPE;
         }
 
         if (player.getName().equals(Minecraft.getMinecraft().getSession().getUsername())) {

@@ -1,5 +1,7 @@
 package com.snoworange.mousse.util.render;
 
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.AxisAlignedBB;
 import java.awt.Color;
@@ -88,6 +90,30 @@ public class RenderUtils2
         GlStateManager.enableCull();
         GlStateManager.enableAlpha();
         GlStateManager.shadeModel(7424);
+    }
+
+    public static void drawChatboxOutline() {
+        final ScaledResolution sr = new ScaledResolution(mc);
+        drawHorizontalGradientBox(0, sr.getScaledHeight() - 16, sr.getScaledWidth(), 1, new Color( 131, 141, 59).getRGB(), new Color(103, 115, 40).getRGB());
+        drawHorizontalGradientBox(0, sr.getScaledHeight() - 1, sr.getScaledWidth(), 1, new Color(103, 115, 40).getRGB(), new Color( 131, 141, 59).getRGB());
+        GuiScreen.drawRect(0, sr.getScaledHeight() - 15, 1, sr.getScaledHeight() - 1, new Color( 131, 141, 59).getRGB());
+        GuiScreen.drawRect(sr.getScaledWidth() - 1, sr.getScaledHeight() - 15, sr.getScaledWidth(), sr.getScaledHeight() - 1, new Color( 131, 141, 59).getRGB());
+    }
+
+    //Guinness skid
+    public static void drawHorizontalGradientBox(final int n, final int n2, final int n3, final int n4, final int rgb, final int rgb2) {
+        final Color left = new Color(rgb);
+        final Color right = new Color(rgb2);
+        glSetup2d();
+        GL11.glColor4f(left.getRed() / Float.intBitsToFloat(Float.floatToIntBits(0.12302939f) ^ 0x7E84F6D5), left.getGreen() / Float.intBitsToFloat(Float.floatToIntBits(0.09042757f) ^ 0x7EC63217), left.getBlue() / Float.intBitsToFloat(Float.floatToIntBits(0.10351778f) ^ 0x7EAB0121), left.getAlpha() / Float.intBitsToFloat(Float.floatToIntBits(0.28591534f) ^ 0x7DED637F));
+        GL11.glVertex2f((float)n, (float)n2);
+        GL11.glColor4f(left.getRed() / Float.intBitsToFloat(Float.floatToIntBits(0.011889098f) ^ 0x7F3DCA7E), left.getGreen() / Float.intBitsToFloat(Float.floatToIntBits(0.010921111f) ^ 0x7F4DEE76), left.getBlue() / Float.intBitsToFloat(Float.floatToIntBits(0.007876345f) ^ 0x7F7E0BC9), left.getAlpha() / Float.intBitsToFloat(Float.floatToIntBits(0.19212435f) ^ 0x7D3BBC3F));
+        GL11.glVertex2f((float)n, (float)(n2 + n4));
+        GL11.glColor4f(right.getRed() / Float.intBitsToFloat(Float.floatToIntBits(0.010253876f) ^ 0x7F58FFE0), right.getGreen() / Float.intBitsToFloat(Float.floatToIntBits(0.012329256f) ^ 0x7F3500A6), right.getBlue() / Float.intBitsToFloat(Float.floatToIntBits(0.009848915f) ^ 0x7F5E5D58), right.getAlpha() / Float.intBitsToFloat(Float.floatToIntBits(0.05600446f) ^ 0x7E1A64EF));
+        GL11.glVertex2f((float)(n + n3), (float)(n2 + n4));
+        GL11.glColor4f(right.getRed() / Float.intBitsToFloat(Float.floatToIntBits(0.116985135f) ^ 0x7E9095E7), right.getGreen() / Float.intBitsToFloat(Float.floatToIntBits(0.008322305f) ^ 0x7F775A47), right.getBlue() / Float.intBitsToFloat(Float.floatToIntBits(0.009070598f) ^ 0x7F6B9CD8), right.getAlpha() / Float.intBitsToFloat(Float.floatToIntBits(0.015589201f) ^ 0x7F0069D9));
+        GL11.glVertex2f((float)(n + n3), (float)n2);
+        glShutdown2d();
     }
 
     static {

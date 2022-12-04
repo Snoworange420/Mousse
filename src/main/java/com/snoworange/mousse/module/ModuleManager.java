@@ -48,11 +48,10 @@ public class ModuleManager {
         //modules.add(new Dispenser32kRewrite());
         modules.add(new ThreadAura());
         modules.add(new Info32k());
+        modules.add(new AutoCrystal());
 
         //EXPLOIT
         modules.add(new SecretClose());
-
-        //JOKES
 
         //MOVEMENT
         modules.add(new ElytraFly());
@@ -72,6 +71,7 @@ public class ModuleManager {
         modules.add(new Jesus());
         modules.add(new Capes());
         modules.add(new HeadRotator());
+        modules.add(new FakePlayer());
 
         //MISC
         modules.add(new Disconnector());

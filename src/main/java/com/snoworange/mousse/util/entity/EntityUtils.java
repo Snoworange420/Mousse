@@ -4,6 +4,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
@@ -271,5 +272,64 @@ public class EntityUtils {
             val = max;
         }
         return val;
+    }
+
+    public static boolean isInHole(Entity entity) {
+        return isBlockValid(new BlockPos(entity.posX, entity.posY, entity.posZ));
+    }
+
+    public static boolean isBlockValid(BlockPos blockPos) {
+        return (isBedrockHole(blockPos) || isObbyHole(blockPos) || isBothHole(blockPos));
+    }
+
+    public static boolean isObbyHole(BlockPos blockPos) {
+        BlockPos[] touchingBlocks;
+        BlockPos[] arrayOfBlockPos1;
+        int i;
+        byte b;
+        for (arrayOfBlockPos1 = touchingBlocks = new BlockPos[] { blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west(), blockPos.down() }, i = arrayOfBlockPos1.length, b = 0; b < i; ) {
+            BlockPos pos = arrayOfBlockPos1[b];
+            IBlockState touchingState = mc.world.getBlockState(pos);
+            if (touchingState.getBlock() != Blocks.AIR && touchingState.getBlock() == Blocks.OBSIDIAN) {
+                b++;
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isBedrockHole(BlockPos blockPos) {
+        BlockPos[] touchingBlocks;
+        BlockPos[] arrayOfBlockPos1;
+        int i;
+        byte b;
+        for (arrayOfBlockPos1 = touchingBlocks = new BlockPos[] { blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west(), blockPos.down() }, i = arrayOfBlockPos1.length, b = 0; b < i; ) {
+            BlockPos pos = arrayOfBlockPos1[b];
+            IBlockState touchingState = mc.world.getBlockState(pos);
+            if (touchingState.getBlock() != Blocks.AIR && touchingState.getBlock() == Blocks.BEDROCK) {
+                b++;
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isBothHole(BlockPos blockPos) {
+        BlockPos[] touchingBlocks;
+        BlockPos[] arrayOfBlockPos1;
+        int i;
+        byte b;
+        for (arrayOfBlockPos1 = touchingBlocks = new BlockPos[] { blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west(), blockPos.down() }, i = arrayOfBlockPos1.length, b = 0; b < i; ) {
+            BlockPos pos = arrayOfBlockPos1[b];
+            IBlockState touchingState = mc.world.getBlockState(pos);
+            if (touchingState.getBlock() != Blocks.AIR && (touchingState.getBlock() == Blocks.BEDROCK || touchingState.getBlock() == Blocks.OBSIDIAN)) {
+                b++;
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 }

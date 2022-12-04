@@ -68,9 +68,9 @@ public class Hud extends Gui {
             if (Main.moduleManager.getModule("32kInfo").isEnabled()) {
 
                 if (Info32k.has32k()) {
-                    fr.drawString("32k in hotbar!", 100, 12, new Color(107, 154, 69).getRGB(), false);
+                    fr.drawString("32k in hotbar!", 75, 12, new Color(107, 154, 69).getRGB(), false);
                 } else {
-                    fr.drawString("No 32k in hotbar!", 100, 12, new Color(222, 39, 39).getRGB(), false);
+                    fr.drawString("No 32k in hotbar!", 75, 12, new Color(222, 39, 39).getRGB(), false);
                 }
             }
         }

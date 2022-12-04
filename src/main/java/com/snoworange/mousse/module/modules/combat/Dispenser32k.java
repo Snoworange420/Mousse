@@ -43,7 +43,7 @@ import java.awt.*;
 
 public class Dispenser32k extends Module {
 
-    //Obfed (fr)
+    //automatically obfed by myself lmao
 
     public BlockPos placedPos;
     public BlockPos redstonePos;
@@ -627,7 +627,7 @@ public class Dispenser32k extends Module {
                             //obi
                             if (blockShulker.enable) {
 
-                                if (mc.world.getBlockState(closestHopperPos.up()).getBlock() instanceof BlockShulkerBox && !mc.world.getBlockState(closestHopperPos.up(2)).isFullBlock()) {
+                                if (fastHopper.enable) {
 
                                     if (obsidianIndex != -1) {
                                         mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
@@ -662,8 +662,49 @@ public class Dispenser32k extends Module {
                                     } else {
                                         Main.sendMessage("bruh");
                                     }
+
+
+                                } else {
+                                    if (obsidianIndex != -1) {
+                                        mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
+
+                                        if (!silentSwap.enable) {
+                                            mc.player.inventory.currentItem = obsidianIndex;
+                                        }
+
+                                        mc.playerController.updateController();
+
+                                        placeBlock(doStuffWithBlockPosDirection(closestHopperPos.up(), dispenserDirection.getOpposite()));
+
+                                    } else if (dispenserIndex != -1) {
+                                        mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+
+                                        if (!silentSwap.enable) {
+                                            mc.player.inventory.currentItem = dispenserIndex;
+                                        }
+
+                                        mc.playerController.updateController();
+
+                                        placeBlock(doStuffWithBlockPosDirection(closestHopperPos.up(), dispenserDirection.getOpposite()));
+
+                                    } else if (redstoneIndex != -1) {
+                                        mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+
+                                        if (!silentSwap.enable) {
+                                            mc.player.inventory.currentItem = redstoneIndex;
+                                        }
+
+                                        mc.playerController.updateController();
+
+                                        placeBlock(doStuffWithBlockPosDirection(closestHopperPos.up(), dispenserDirection.getOpposite()));
+                                    } else {
+                                        Main.sendMessage("bruh");
+                                    }
                                 }
                             }
+
+                            mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+                            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
 
                             //open hopper
 
@@ -702,40 +743,85 @@ public class Dispenser32k extends Module {
                     if (!mc.world.getBlockState(closestHopperPos.up(2)).isFullBlock()) {
                         //obi
                         if (blockShulker.enable) {
-                            if (obsidianIndex != -1) {
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
 
-                                if (!silentSwap.enable) {
-                                    mc.player.inventory.currentItem = obsidianIndex;
+                            if (fastHopper.enable) {
+
+                                if (obsidianIndex != -1) {
+                                    mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
+
+                                    if (!silentSwap.enable) {
+                                        mc.player.inventory.currentItem = obsidianIndex;
+                                    }
+
+                                    mc.playerController.updateController();
+
+                                    placeBlock(closestHopperPos.up(2));
+                                } else if (dispenserIndex != -1) {
+                                    mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+
+                                    if (!silentSwap.enable) {
+                                        mc.player.inventory.currentItem = dispenserIndex;
+                                    }
+
+                                    mc.playerController.updateController();
+
+                                    placeBlock(closestHopperPos.up(2));
+                                } else if (redstoneIndex != -1) {
+                                    mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+
+                                    if (!silentSwap.enable) {
+                                        mc.player.inventory.currentItem = redstoneIndex;
+                                    }
+
+                                    mc.playerController.updateController();
+
+                                    placeBlock(closestHopperPos.up(2));
+                                } else {
+                                    Main.sendMessage("bruh");
                                 }
 
-                                mc.playerController.updateController();
 
-                                placeBlock(closestHopperPos.up(2));
-                            } else if (dispenserIndex != -1) {
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
-
-                                if (!silentSwap.enable) {
-                                    mc.player.inventory.currentItem = dispenserIndex;
-                                }
-
-                                mc.playerController.updateController();
-
-                                placeBlock(closestHopperPos.up(2));
-                            } else if (redstoneIndex != -1) {
-                                mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
-
-                                if (!silentSwap.enable) {
-                                    mc.player.inventory.currentItem = redstoneIndex;
-                                }
-
-                                mc.playerController.updateController();
-
-                                placeBlock(closestHopperPos.up(2));
                             } else {
-                                Main.sendMessage("bruh");
+                                if (obsidianIndex != -1) {
+                                    mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
+
+                                    if (!silentSwap.enable) {
+                                        mc.player.inventory.currentItem = obsidianIndex;
+                                    }
+
+                                    mc.playerController.updateController();
+
+                                    placeBlock(doStuffWithBlockPosDirection(closestHopperPos.up(), dispenserDirection.getOpposite()));
+
+                                } else if (dispenserIndex != -1) {
+                                    mc.player.connection.sendPacket(new CPacketHeldItemChange(dispenserIndex));
+
+                                    if (!silentSwap.enable) {
+                                        mc.player.inventory.currentItem = dispenserIndex;
+                                    }
+
+                                    mc.playerController.updateController();
+
+                                    placeBlock(doStuffWithBlockPosDirection(closestHopperPos.up(), dispenserDirection.getOpposite()));
+
+                                } else if (redstoneIndex != -1) {
+                                    mc.player.connection.sendPacket(new CPacketHeldItemChange(redstoneIndex));
+
+                                    if (!silentSwap.enable) {
+                                        mc.player.inventory.currentItem = redstoneIndex;
+                                    }
+
+                                    mc.playerController.updateController();
+
+                                    placeBlock(doStuffWithBlockPosDirection(closestHopperPos.up(), dispenserDirection.getOpposite()));
+                                } else {
+                                    Main.sendMessage("bruh");
+                                }
                             }
                         }
+
+                        mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+                        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
                     }
                 }
             }
@@ -982,4 +1068,35 @@ public class Dispenser32k extends Module {
             }
         }
     }
+
+    public BlockPos doStuffWithBlockPosDirection(BlockPos blockPos, EnumFacing direction) {
+
+        if (direction.equals(EnumFacing.NORTH)) {
+            return blockPos.north();
+        }
+
+        if (direction.equals(EnumFacing.EAST)) {
+            return blockPos.east();
+        }
+
+        if (direction.equals(EnumFacing.SOUTH)) {
+            return blockPos.south();
+        }
+
+        if (direction.equals(EnumFacing.WEST)) {
+            return blockPos.west();
+        }
+
+        if (direction.equals(EnumFacing.DOWN)) {
+            return blockPos.down();
+        }
+
+        if (direction.equals(EnumFacing.UP)) {
+            return blockPos.up();
+        }
+
+        return null;
+    }
 }
+
+//I need rewrite fr

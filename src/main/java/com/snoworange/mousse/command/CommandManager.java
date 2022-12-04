@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CommandManager {
-    public List<Command> commands = new ArrayList<Command>();
-    public String prefix = "&";
+    public static List<Command> commands = new ArrayList<Command>();
+    public static String prefix = "&";
 
     public CommandManager() {
         MinecraftForge.EVENT_BUS.register(this);
