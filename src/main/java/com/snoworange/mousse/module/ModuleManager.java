@@ -45,7 +45,7 @@ public class ModuleManager {
         modules.add(new Grab32k());
         modules.add(new Auto32k2019());
         modules.add(new Notify32k());
-        //modules.add(new Dispenser32kRewrite());
+        modules.add(new Dispenser32kRewrite());
         modules.add(new ThreadAura());
         modules.add(new Info32k());
         modules.add(new AutoCrystal());

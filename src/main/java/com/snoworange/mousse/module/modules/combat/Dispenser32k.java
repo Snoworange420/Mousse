@@ -10,21 +10,16 @@ import com.snoworange.mousse.util.block.BlockUtils;
 import com.snoworange.mousse.util.render.ColorUtils;
 import com.snoworange.mousse.util.render.RenderUtils2;
 import net.minecraft.block.*;
-import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.ContainerDispenser;
 import net.minecraft.inventory.ContainerHopper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemAir;
-import net.minecraft.item.ItemShulkerBox;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
@@ -37,13 +32,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.awt.*;
 
 public class Dispenser32k extends Module {
 
-    //automatically obfed by myself lmao
+    //Obfed (fr)
 
     public BlockPos placedPos;
     public BlockPos redstonePos;
@@ -55,7 +49,7 @@ public class Dispenser32k extends Module {
     public double wallHeight;
     public double radius;
     public double heightValue = 1.0;
-    public boolean hasPlacedStuff, swappedShulker, placedRedstone, placedHopper, disableRadius, clickedHopper = false;
+    public boolean hasPlacedStuff, swappedShulker, placedRedstone, placedHopper, disableRadius, clickedHopper, placewithobi = false;
     public int rstick = 0;
 
     public static Dispenser32k instance;
@@ -77,6 +71,7 @@ public class Dispenser32k extends Module {
     BooleanSetting blockShulker;
     BooleanSetting openHopperWithPacket;
     BooleanSetting disableOnDeath;
+    BooleanSetting refillShulker;
 
 
     @Override
@@ -95,8 +90,9 @@ public class Dispenser32k extends Module {
         openHopperWithPacket = new BooleanSetting("Open Hopper with Packet", true);
         blockShulker = new BooleanSetting("Block Shulker", false);
         disableOnDeath = new BooleanSetting("Disable on Death", true);
+        refillShulker = new BooleanSetting("Refill Shulker", true);
 
-        addSetting(autoClose, /* redstoneDelay, */ fastHopper, allowVertical, renderCircle, silentSwap, swapToSuperweaponIndex, speed, autoDisable, openHopperWithPacket, disableOnDeath, blockShulker);
+        addSetting(autoClose, /* redstoneDelay, */ fastHopper, allowVertical, renderCircle, silentSwap, swapToSuperweaponIndex, speed, autoDisable, openHopperWithPacket, disableOnDeath, blockShulker, refillShulker);
     }
 
     @Override
@@ -114,6 +110,7 @@ public class Dispenser32k extends Module {
         disableRadius = false;
         clickedHopper = false;
         prepareFastHopper = false;
+        placewithobi = false;
 
         rstick = 0;
     }
@@ -162,23 +159,19 @@ public class Dispenser32k extends Module {
                     obsidianIndex = i;
                 }
 
-                if (itemStack.getItem() instanceof ItemShulkerBox) {
-                    shulkerIndex = i;
-                }
-
                 if (itemStack.getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, itemStack) >= Short.MAX_VALUE) {
                     enchantedSwordIndex = i;
                 }
+
+                if (itemStack.getItem() instanceof ItemShulkerBox) {
+                    shulkerIndex = i;
+                }
             }
 
-            if (!this.hasPlacedStuff && (hopperIndex == -1 || shulkerIndex == -1 || dispenserIndex == -1 ||  redstoneIndex == -1)) {
+            if (!this.hasPlacedStuff && (hopperIndex == -1 || dispenserIndex == -1 || redstoneIndex == -1)) {
 
                 if (hopperIndex == -1) {
                     Main.sendMessage("Missing hopper in your hotbar!");
-                }
-
-                if (shulkerIndex == -1) {
-                    Main.sendMessage("Missing shulker box in your hotbar!");
                 }
 
                 if (dispenserIndex == -1) {
@@ -193,6 +186,28 @@ public class Dispenser32k extends Module {
                 return;
             }
 
+            if (shulkerIndex == -1 && !hasPlacedStuff && refillShulker.isEnable()) {
+
+                for (int i = 9; i < 36; ++i) {
+                    final ItemStack stack = mc.player.inventory.getStackInSlot(i);
+                    if (stack != ItemStack.EMPTY) {
+                        if (stack.getItem() instanceof ItemBlock) {
+                            final Block block = ((ItemBlock)stack.getItem()).getBlock();
+                            if (BlockUtils.shulkerList.contains(block)) {
+                                shulkerIndex = i;
+                            }
+                        }
+                    }
+                }
+
+                if (shulkerIndex != -1) {
+                    mc.playerController.windowClick(mc.player.openContainer.windowId, shulkerIndex, mc.player.inventory.currentItem, ClickType.SWAP, (EntityPlayer) mc.player);
+                } else {
+                    Main.sendMessage("Coudn't find any shulker box in your inventory!");
+                    disable();
+                }
+            }
+
             //Dispenser placement and redstone blockpos defining
 
             //THERE SHOULD BE A BETTER WAY TO DO THIS
@@ -205,7 +220,7 @@ public class Dispenser32k extends Module {
 
                 for (BlockPos blockPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 3, mc.player.posY - 1, mc.player.posZ - 3), new BlockPos(mc.player.posX + 3, mc.player.posY, mc.player.posZ + 3))) {
 
-                    if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < closestBlockPosDistance && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(-1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 1))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, -1))).isEmpty() && /* !(mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir) && */ mc.world.getBlockState(blockPos).isFullBlock() && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir && /* --> */ mc.world.getBlockState(blockPos.north()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.north().up()).getBlock() instanceof BlockAir && !(mc.world.getBlockState(blockPos.north().north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.north().west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.north().south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.north().east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.north().down()).getBlock().equals(Blocks.REDSTONE_BLOCK))) {
+                    if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < closestBlockPosDistance && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(-1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 1))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, -1))).isEmpty() && /* !(mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir) && */ BlockUtils.canBeClicked(blockPos) && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir && /* --> */ mc.world.getBlockState(blockPos.north()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.north().up()).getBlock() instanceof BlockAir && !(mc.world.getBlockState(blockPos.north().north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.north().west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.north().south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.north().east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.north().down()).getBlock().equals(Blocks.REDSTONE_BLOCK))) {
 
                         //north
 
@@ -231,7 +246,7 @@ public class Dispenser32k extends Module {
                         } else {
                             Main.sendMessage("Cannot place redstone block!");
                         }
-                    } else if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < closestBlockPosDistance && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(-1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 1))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, -1))).isEmpty() && /* !(mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir) && */ mc.world.getBlockState(blockPos).isFullBlock() && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir && /* --> */ mc.world.getBlockState(blockPos.east()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.east().up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.north().up()).getBlock() instanceof BlockAir && !(mc.world.getBlockState(blockPos.east().north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.east().west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.east().south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.east().east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.east().down()).getBlock().equals(Blocks.REDSTONE_BLOCK))) {
+                    } else if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < closestBlockPosDistance && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(-1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 1))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, -1))).isEmpty() && /* !(mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir) && */ BlockUtils.canBeClicked(blockPos) && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir && /* --> */ mc.world.getBlockState(blockPos.east()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.east().up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.north().up()).getBlock() instanceof BlockAir && !(mc.world.getBlockState(blockPos.east().north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.east().west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.east().south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.east().east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.east().down()).getBlock().equals(Blocks.REDSTONE_BLOCK))) {
 
                         //east
 
@@ -257,7 +272,7 @@ public class Dispenser32k extends Module {
                         } else {
                             Main.sendMessage("Cannot place redstone block!");
                         }
-                    } else if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < closestBlockPosDistance && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(-1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 1))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, -1))).isEmpty() && /* !(mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir) && */ mc.world.getBlockState(blockPos).isFullBlock() && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir && /* --> */ mc.world.getBlockState(blockPos.south()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.south().up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.north().up()).getBlock() instanceof BlockAir && !(mc.world.getBlockState(blockPos.south().north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.south().west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.south().south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.south().east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.south().down()).getBlock().equals(Blocks.REDSTONE_BLOCK))) {
+                    } else if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < closestBlockPosDistance && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(-1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 1))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, -1))).isEmpty() && /* !(mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir) && */ BlockUtils.canBeClicked(blockPos) && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir && /* --> */ mc.world.getBlockState(blockPos.south()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.south().up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.north().up()).getBlock() instanceof BlockAir && !(mc.world.getBlockState(blockPos.south().north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.south().west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.south().south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.south().east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.south().down()).getBlock().equals(Blocks.REDSTONE_BLOCK))) {
 
                         //south
 
@@ -283,7 +298,7 @@ public class Dispenser32k extends Module {
                         } else {
                             Main.sendMessage("Cannot place redstone block!");
                         }
-                    } else if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < closestBlockPosDistance && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(-1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 1))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, -1))).isEmpty() && /* !(mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir) && */ mc.world.getBlockState(blockPos).isFullBlock() && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir && /* --> */ mc.world.getBlockState(blockPos.west()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.west().up()).getBlock() instanceof BlockAir && !(mc.world.getBlockState(blockPos.west().north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.west().west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.west().south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.west().east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.west().down()).getBlock().equals(Blocks.REDSTONE_BLOCK))) {
+                    } else if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < closestBlockPosDistance && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(-1, 1, 0))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 1))).isEmpty() && mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, -1))).isEmpty() && /* !(mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir) && */ BlockUtils.canBeClicked(blockPos) && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir && /* --> */ mc.world.getBlockState(blockPos.west()).getBlock() instanceof BlockAir && mc.world.getBlockState(blockPos.west().up()).getBlock() instanceof BlockAir && !(mc.world.getBlockState(blockPos.west().north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.west().west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.west().south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.west().east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(blockPos.west().down()).getBlock().equals(Blocks.REDSTONE_BLOCK))) {
 
                         //west
 
@@ -314,6 +329,7 @@ public class Dispenser32k extends Module {
 
                 if (closestBlockPos != null) {
                     this.placeStuff(hopperIndex, shulkerIndex, redstoneIndex, dispenserIndex, obsidianIndex, closestBlockPos.down(), EnumFacing.UP, new Vec3d(closestBlockPos.getX(), closestBlockPos.getY(), closestBlockPos.getZ()));
+                    placewithobi = false;
                 } else {
 
                     if (allowVertical.enable) {
@@ -346,6 +362,7 @@ public class Dispenser32k extends Module {
 
                     if (closestBlockPos != null) {
                         this.placeStuffVertical(dispenserIndex, shulkerIndex, closestBlockPos, EnumFacing.UP, new Vec3d(closestBlockPos.getX(), closestBlockPos.getY(), closestBlockPos.getZ()));
+                        placewithobi = false;
                     } else {
                         for (BlockPos blockPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 3, mc.player.posY - 1, mc.player.posZ - 3), new BlockPos(mc.player.posX + 3, mc.player.posY, mc.player.posZ + 3))) {
 
@@ -458,6 +475,7 @@ public class Dispenser32k extends Module {
 
                         if (closestBlockPos != null) {
                             this.placeStuff(hopperIndex, shulkerIndex, redstoneIndex, dispenserIndex, obsidianIndex, closestBlockPos.down(), EnumFacing.UP, new Vec3d(closestBlockPos.getX(), closestBlockPos.getY(), closestBlockPos.getZ()));
+                            placewithobi = true;
                         } else {
                             Main.sendMessage("Cannot find any valid placements... disabeling!");
                             disable();
@@ -471,15 +489,8 @@ public class Dispenser32k extends Module {
 
                 if (mc.player.openContainer != null && mc.player.openContainer instanceof ContainerDispenser && mc.player.openContainer.inventorySlots.get(0).getStack().isEmpty()) {
 
-                    //Prepare for shulker swapping
-                    if (!silentSwap.enable) {
-                        mc.player.connection.sendPacket(new CPacketHeldItemChange(shulkerIndex));
-                        mc.player.inventory.currentItem = shulkerIndex;
-                        mc.playerController.updateController();
-                    }
-
                     //swap shulker
-                    mc.playerController.windowClick(mc.player.openContainer.windowId, mc.player.openContainer.inventorySlots.get(0).slotNumber, silentSwap.enable ? shulkerIndex : !silentSwap.enable ? mc.player.inventory.currentItem : mc.player.inventory.currentItem, ClickType.SWAP, mc.player);
+                    mc.playerController.windowClick(mc.player.openContainer.windowId, mc.player.openContainer.inventorySlots.get(0).slotNumber, shulkerIndex, ClickType.SWAP, mc.player);
 
                     //final shulker box check
                     if (mc.player.openContainer.inventorySlots.get(0).getStack().getItem() instanceof ItemShulkerBox) {
@@ -928,8 +939,8 @@ public class Dispenser32k extends Module {
     public void placeStuff(int hopperIndex, int shulkerIndex, int redstoneIndex, int dispenserIndex, int obsidianIndex, BlockPos blockPos, EnumFacing enumFacing, Vec3d vec3d) {
         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
 
-        //Place obby (forced)
-        if (mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir) {
+        //Place obby (only when it doesnt skip place with obsidian)
+        if (mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir && placewithobi) {
 
             mc.player.connection.sendPacket(new CPacketHeldItemChange(obsidianIndex));
 
@@ -1098,5 +1109,3 @@ public class Dispenser32k extends Module {
         return null;
     }
 }
-
-//I need rewrite fr

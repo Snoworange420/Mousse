@@ -5,19 +5,19 @@ import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.setting.settings.BooleanSetting;
 import com.snoworange.mousse.util.block.BlockUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.*;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiHopper;
+import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemShulkerBox;
-import net.minecraft.item.ItemStack;
+import net.minecraft.inventory.ContainerDispenser;
+import net.minecraft.inventory.ContainerHopper;
+import net.minecraft.item.*;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
@@ -31,14 +31,20 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Dispenser32kRewrite extends Module {
 
-    //TODO: this is broken why tf
-
-
     public int stage = 0;
     public BlockPos basePos;
+    public BlockPos tempBasePos;
+    public BlockPos redstonePos;
     public EnumFacing dispenserDirection;
+    public boolean placeVertically;
 
     BooleanSetting silent;
+    BooleanSetting swing;
+    BooleanSetting rotate;
+    BooleanSetting smartRedstone;
+    BooleanSetting autoClose;
+    BooleanSetting autoDisable;
+    BooleanSetting refillShulker;
 
     public Dispenser32kRewrite() {
         super("Dispenser32kNew", "rewrite", Category.COMBAT);
@@ -48,8 +54,15 @@ public class Dispenser32kRewrite extends Module {
     public void init() {
         super.init();
 
-        silent = new BooleanSetting("SilentSwap", true);
-        addSetting(silent);
+        silent = new BooleanSetting("Silent Swap", true);
+        swing = new BooleanSetting("Swing", true);
+        rotate = new BooleanSetting("Rotate", true);
+        smartRedstone = new BooleanSetting("Smart Redstone", true);
+        autoClose = new BooleanSetting("Auto Close", true);
+        autoDisable = new BooleanSetting("Auto Disable", true);
+        refillShulker = new BooleanSetting("Refill Shulker", true);
+
+        addSetting(silent, swing, rotate, smartRedstone, autoClose, autoDisable, refillShulker);
     }
 
     @Override
@@ -58,12 +71,17 @@ public class Dispenser32kRewrite extends Module {
 
         stage = 0;
         basePos = null;
+        redstonePos = null;
+        tempBasePos = null;
         dispenserDirection = null;
+        placeVertically = false;
     }
 
     @Override
     public void onDisable() {
         super.onDisable();
+
+        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
     }
 
     @SubscribeEvent
@@ -103,14 +121,10 @@ public class Dispenser32kRewrite extends Module {
                 }
             }
 
-            if (stage == 0 && (hopperIndex == -1 || shulkerIndex == -1 || dispenserIndex == -1 ||  redstoneIndex == -1)) {
+            if (stage == 0 && (hopperIndex == -1 || dispenserIndex == -1 ||  redstoneIndex == -1)) {
 
                 if (hopperIndex == -1) {
                     Main.sendMessage("Missing hopper in your hotbar!");
-                }
-
-                if (shulkerIndex == -1) {
-                    Main.sendMessage("Missing shulker box in your hotbar!");
                 }
 
                 if (dispenserIndex == -1) {
@@ -126,12 +140,83 @@ public class Dispenser32kRewrite extends Module {
 
             if (stage == 0) {
 
+                //placin' time
+                if (basePos == null) {
+                    for (int j = 0; j < 3; j++) {
+                        if (basePos == null) {
+
+                            if (j == 0) {
+                                searchBestPlacement();
+                            }
+
+                            //1 tick later then common placement, need fix
+                            if (j == 1) {
+                                searchBestPlacementVertically();
+                            }
+
+                            //2 tick :skull:
+                            if (j == 2) {
+
+                                //place block if we cant find any possible placements
+                                update(dispenserIndex);
+                                placeBlock(tempBasePos);
+
+                                //1 tick faster boi
+                                searchBestPlacement();
+                            }
+                        }
+                    }
+                }
+
+                if (basePos != null) stage = 1;
             }
-            
+
             if (stage == 1) {
 
-                update(dispenserIndex);
-                placeBlock(basePos);
+                int airIndex = -1;
+
+                //bajundsiohvuoioauodabsvsaiodosadv
+                if (refillShulker.isEnable() && shulkerIndex == -1) {
+
+                    //look for empty slot to swap shulker
+                    for (int i = 0; i < 9; i++) {
+                        ItemStack itemStack = mc.player.inventory.mainInventory.get(i);
+                        if (itemStack.getItem() instanceof ItemAir) {
+                            airIndex = i;
+                        }
+                    }
+
+                    //search shulker box
+                    for (int i = 9; i < 36; ++i) {
+                        final ItemStack stack = mc.player.inventory.getStackInSlot(i);
+                        if (stack != ItemStack.EMPTY) {
+                            if (stack.getItem() instanceof ItemBlock) {
+                                final Block block = ((ItemBlock) stack.getItem()).getBlock();
+                                if (BlockUtils.shulkerList.contains(block)) {
+                                    shulkerIndex = i;
+                                }
+                            }
+                        }
+                    }
+
+                    //swap shulker box
+                    if (shulkerIndex != -1) {
+                        mc.playerController.windowClick(mc.player.openContainer.windowId, shulkerIndex, airIndex != -1 ? airIndex : mc.player.inventory.currentItem, ClickType.SWAP, (EntityPlayer) mc.player);
+                    }
+                }
+
+                //ohno
+                if (shulkerIndex == -1) {
+                    Main.sendMessage("Coudn't find any shulker box in your " + (refillShulker.isEnable() ? "inventory!" : "hotbar!"));
+                    disable();
+                }
+
+                stage = 2;
+            }
+
+            if (stage == 2) {
+
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
 
                 float yaw = 0.0f;
 
@@ -143,76 +228,302 @@ public class Dispenser32kRewrite extends Module {
                     yaw = 1.0f;
                 } else if (dispenserDirection == EnumFacing.WEST) {
                     yaw = 91.0f;
+                }
+
+                //Sends rotation packet to rotate dispenser, if needed
+                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(!placeVertically ? yaw : 0, !placeVertically ? mc.player.rotationPitch : -90, mc.player.onGround));
+
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+
+                update(dispenserIndex);
+                mc.playerController.updateController();
+
+                //Place dispenser
+
+                if (!placeVertically) {
+                    placeBlock(basePos.up());
                 } else {
-                    Main.sendMessage("??????");
+                    placeBlock(basePos);
                 }
 
-                placeBlock(basePos.up());
+                if (swing.isEnable()) mc.player.swingArm(EnumHand.MAIN_HAND);
 
-                Main.sendMessage("Dispenser Direction: " + dispenserDirection.getName());
-                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(yaw, mc.player.rotationPitch, mc.player.onGround));
-
+                //Open dispenser
                 mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
-                mc.playerController.processRightClickBlock(mc.player, mc.world, basePos.up(), EnumFacing.UP, new Vec3d(basePos.up().getX(), basePos.up().getY(), basePos.up().getZ()), EnumHand.MAIN_HAND);
 
-                stage = 2;
-            }
-
-            if (stage == 2) {
-                if (mc.player.openContainer.inventorySlots.get(0).getStack().isEmpty()) mc.playerController.windowClick(mc.player.openContainer.windowId, mc.player.openContainer.inventorySlots.get(0).slotNumber, shulkerIndex, ClickType.SWAP, mc.player);
-
-                if (mc.player.openContainer.inventorySlots.get(0).getStack().getItem() instanceof ItemShulkerBox) {
-                    mc.player.closeScreen();
-                    stage = 3;
+                if (!placeVertically) {
+                    mc.playerController.processRightClickBlock(mc.player, mc.world, basePos.up(), EnumFacing.UP, new Vec3d(basePos.up().getX(), basePos.up().getY(), basePos.up().getZ()), EnumHand.MAIN_HAND);
+                } else {
+                    mc.playerController.processRightClickBlock(mc.player, mc.world, basePos, EnumFacing.UP, new Vec3d(basePos.getX(), basePos.getY(), basePos.getZ()), EnumHand.MAIN_HAND);
                 }
+
+                if (swing.isEnable()) mc.player.swingArm(EnumHand.MAIN_HAND);
+
+                stage = 3;
             }
 
             if (stage == 3) {
-                update(redstoneIndex);
-                placeBlock(basePos.up(2));
 
-                stage = 4;
+                if (mc.player.openContainer != null && mc.player.openContainer instanceof ContainerDispenser && mc.player.openContainer.inventorySlots != null) {
+
+                    //swap shulker box
+                    if (mc.player.openContainer.inventorySlots.get(0).getStack().isEmpty()) mc.playerController.windowClick(mc.player.openContainer.windowId, mc.player.openContainer.inventorySlots.get(0).slotNumber, shulkerIndex, ClickType.SWAP, mc.player);
+
+                    //check if shulker is "accutually" is swapped
+                    if (mc.player.openContainer.inventorySlots.get(0).getStack().getItem() instanceof ItemShulkerBox) {
+
+                        if (mc.currentScreen instanceof GuiDispenser) mc.player.closeScreen();
+
+                        stage = 4;
+                    }
+                }
             }
 
             if (stage == 4) {
-                disable();
+
+                //place redstone
+                if (redstonePos != null) {
+
+                    update(redstoneIndex);
+                    placeBlock(redstonePos);
+
+                    stage = 5;
+
+                } else {
+
+                    Main.sendMessage("Coudn't find any valid redstone placement! disabling...");
+                    mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+                    disable();
+                }
+            }
+
+            if (stage == 5) {
+
+                //place hopper
+                if (!placeVertically) {
+                    update(hopperIndex);
+                    placeBlock(getBlockPosFromDirection(basePos, dispenserDirection.getOpposite()));
+                } else {
+                    update(hopperIndex);
+                    placeBlock(basePos.down(2));
+                }
+
+                mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+
+                stage = 6;
+            }
+
+            if (stage == 6) {
+
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+
+                if (!placeVertically) {
+                    mc.playerController.processRightClickBlock(mc.player, mc.world, getBlockPosFromDirection(basePos, dispenserDirection.getOpposite()), EnumFacing.UP, new Vec3d(getBlockPosFromDirection(basePos, dispenserDirection.getOpposite()).getX(), getBlockPosFromDirection(basePos, dispenserDirection.getOpposite()).getY(), getBlockPosFromDirection(basePos, dispenserDirection.getOpposite()).getZ()), EnumHand.MAIN_HAND);
+                } else {
+                    mc.playerController.processRightClickBlock(mc.player, mc.world, basePos.down(2), EnumFacing.UP, new Vec3d(basePos.down(2).getX(), basePos.down(2).getY(), basePos.down(2).getZ()), EnumHand.MAIN_HAND);
+                }
+
+                stage = 7;
+            }
+
+            if (stage == 7) {
+
+                //swap 32k
+                if (enchantedSwordIndex == -1 && mc.player.openContainer != null && mc.player.openContainer instanceof ContainerHopper && mc.player.openContainer.inventorySlots != null && !mc.player.openContainer.inventorySlots.isEmpty()) {
+                    for (int i = 0; i < 5; i++) {
+                        if (mc.player.openContainer.inventorySlots.get(0).inventory.getStackInSlot(i).getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, mc.player.openContainer.inventorySlots.get(0).inventory.getStackInSlot(i)) >= Short.MAX_VALUE) {
+                            enchantedSwordIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (enchantedSwordIndex == -1) {
+                        return;
+                    }
+
+                    int airIndex = -1;
+
+                    for (int i = 0; i < 9; i++) {
+                        ItemStack itemStack = mc.player.inventory.mainInventory.get(i);
+                        if (itemStack.getItem() instanceof ItemAir) {
+                            airIndex = i;
+                        }
+                    }
+
+                    mc.playerController.windowClick(mc.player.openContainer.windowId, enchantedSwordIndex, airIndex == -1 ? mc.player.inventory.currentItem : airIndex, ClickType.SWAP, mc.player);
+                    Main.sendMessage("32k found in slot " + enchantedSwordIndex);
+
+                    stage = 8;
+                }
+            }
+
+            if (stage == 8) {
+
+                if (mc.currentScreen instanceof GuiHopper && autoClose.isEnable() && enchantedSwordIndex != -1) mc.player.closeScreen();
+
+                if (autoDisable.isEnable()) disable();
+
+                stage = 9;
+            }
+
+            if (stage == 9) {
+
             }
         }
     }
 
-    public boolean searchBestPlacement(EnumFacing direction) {
-        
+    public void searchBestPlacement() {
+
+        BlockPos closestBlockPos = null;
+        EnumFacing direction = null;
+
+        placeVertically = false;
+
+        if (basePos == null) {
+            for (int i = 0; i < 4; i++) {
+                for (BlockPos blockPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 3, mc.player.posY - 1, mc.player.posZ - 3), new BlockPos(mc.player.posX + 3, mc.player.posY, mc.player.posZ + 3))) {
+                    if (basePos == null) {
+
+                        if (i == 0) {
+                            direction = EnumFacing.NORTH;
+                        } else if (i == 1) {
+                            direction = EnumFacing.EAST;
+                        } else if (i == 2) {
+                            direction = EnumFacing.SOUTH;
+                        } else if (i == 3) {
+                            direction = EnumFacing.WEST;
+                        }
+
+                        tempBasePos = blockPos;
+
+                        if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < 4
+                                && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 0, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty()
+                                && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir
+                                && (mc.world.getBlockState(blockPos.up().north()).isFullBlock()
+                                || mc.world.getBlockState(blockPos.up().east()).isFullBlock()
+                                || mc.world.getBlockState(blockPos.up().south()).isFullBlock()
+                                || mc.world.getBlockState(blockPos.up().west()).isFullBlock()
+                                || mc.world.getBlockState(blockPos.up().down()).isFullBlock()
+                        )
+                                && (smartRedstone.isEnable() ? (
+                                mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir
+                                        || mc.world.getBlockState(blockPos.up().east()).getBlock() instanceof BlockAir
+                                        || mc.world.getBlockState(blockPos.up().south()).getBlock() instanceof BlockAir
+                                        || mc.world.getBlockState(blockPos.up().west()).getBlock() instanceof BlockAir
+                        ) : mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir)
+                                && mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction)).getBlock() instanceof BlockAir
+                                && mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).up()).getBlock() instanceof BlockAir
+                                && !(mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).north()).getBlock().equals(Blocks.REDSTONE_BLOCK)
+                                || mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).east()).getBlock().equals(Blocks.REDSTONE_BLOCK)
+                                || mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).south()).getBlock().equals(Blocks.REDSTONE_BLOCK)
+                                || mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).west()).getBlock().equals(Blocks.REDSTONE_BLOCK)
+                                || mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).down()).getBlock().equals(Blocks.REDSTONE_BLOCK))
+                        ) {
+
+                            closestBlockPos = blockPos;
+                        }
+
+                        //continue
+                        if (closestBlockPos != null) {
+
+                            basePos = closestBlockPos;
+                            dispenserDirection = direction.getOpposite();
+
+                            //Redstone position defining, needs rewrite
+                            if (smartRedstone.isEnable()) {
+                                if (i == 0) {
+                                    //if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().north();
+                                    if (mc.world.getBlockState(blockPos.up().east()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().east();
+                                    if (mc.world.getBlockState(blockPos.up().south()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().south();
+                                    if (mc.world.getBlockState(blockPos.up().west()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().west();
+                                } else if (i == 1) {
+                                    if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().north();
+                                    //if (mc.world.getBlockState(blockPos.up().east()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().east();
+                                    if (mc.world.getBlockState(blockPos.up().south()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().south();
+                                    if (mc.world.getBlockState(blockPos.up().west()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().west();
+                                } else if (i == 2) {
+                                    if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().north();
+                                    if (mc.world.getBlockState(blockPos.up().east()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().east();
+                                    //if (mc.world.getBlockState(blockPos.up().south()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().south();
+                                    if (mc.world.getBlockState(blockPos.up().west()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().west();
+                                } else if (i == 3) {
+                                    if (mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().north();
+                                    if (mc.world.getBlockState(blockPos.up().east()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().east();
+                                    if (mc.world.getBlockState(blockPos.up().south()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().south();
+                                    //if (mc.world.getBlockState(blockPos.up().west()).getBlock() instanceof BlockAir) redstonePos = blockPos.up().west();
+                                } else {
+                                    if (mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir) redstonePos = blockPos.up(2);
+                                }
+                            } else {
+                                if (mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir) redstonePos = blockPos.up(2);
+                            }
+
+                            stage = 1;
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void searchBestPlacementVertically() {
+
         BlockPos closestBlockPos = null;
 
-        for (BlockPos blockPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 3, mc.player.posY - 1, mc.player.posZ - 3), new BlockPos(mc.player.posX + 3, mc.player.posY, mc.player.posZ + 3))) {
+        placeVertically = true;
 
-            if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < 4
-                    && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 0, 0))).isEmpty()
-                    && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty()
-                    && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty()
-                    && mc.world.getBlockState(blockPos).isFullBlock()
-                    && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir
-                    && mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir
-                    && /* --> */ mc.world.getBlockState(doStuffWithBlockPosDirection(blockPos, direction)).getBlock() instanceof BlockAir
-                    && mc.world.getBlockState(doStuffWithBlockPosDirection(blockPos, direction).up()).getBlock() instanceof BlockAir
-                    && !(mc.world.getBlockState(doStuffWithBlockPosDirection(blockPos, direction).north()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(doStuffWithBlockPosDirection(blockPos, direction).west()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(doStuffWithBlockPosDirection(blockPos, direction).south()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(doStuffWithBlockPosDirection(blockPos, direction).east()).getBlock().equals(Blocks.REDSTONE_BLOCK) || mc.world.getBlockState(doStuffWithBlockPosDirection(blockPos, direction).down()).getBlock().equals(Blocks.REDSTONE_BLOCK)))
-            {
-                
-                closestBlockPos = blockPos;
-            }
+        if (basePos == null) {
+            for (BlockPos blockPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 1.3, mc.player.posY + 2, mc.player.posZ - 1.3), new BlockPos(mc.player.posX + 1.3, mc.player.posY + 3, mc.player.posZ + 1.3))) {
+                if (basePos == null) {
 
-            if (closestBlockPos != null) {
-                basePos = closestBlockPos;
-                dispenserDirection = direction.getOpposite();
+                    if (mc.player.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) < 4
+                            && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 0, 0))).isEmpty()
+                            && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, -1, 0))).isEmpty()
+                            && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, -2, 0))).isEmpty()
+                            && mc.world.getBlockState(blockPos).getBlock() instanceof BlockAir
+                            && (mc.world.getBlockState(blockPos.north()).isFullBlock()
+                            || mc.world.getBlockState(blockPos.east()).isFullBlock()
+                            || mc.world.getBlockState(blockPos.south()).isFullBlock()
+                            || mc.world.getBlockState(blockPos.west()).isFullBlock()
+                            || mc.world.getBlockState(blockPos.up()).isFullBlock()
+                    )
+                            && mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir
+                            && mc.world.getBlockState(blockPos.down(2)).getBlock() instanceof BlockAir
+                            && mc.world.getBlockState(blockPos.down(3)).isFullBlock()
+                            && !(mc.world.getBlockState(blockPos.down(2).north()).getBlock().equals(Blocks.REDSTONE_BLOCK)
+                            || mc.world.getBlockState(blockPos.down(2).east()).getBlock().equals(Blocks.REDSTONE_BLOCK)
+                            || mc.world.getBlockState(blockPos.down(2).south()).getBlock().equals(Blocks.REDSTONE_BLOCK)
+                            || mc.world.getBlockState(blockPos.down(2).west()).getBlock().equals(Blocks.REDSTONE_BLOCK)
+                            || mc.world.getBlockState(blockPos.down(3)).getBlock().equals(Blocks.REDSTONE_BLOCK))
+                    ) {
 
-                return true;
+                        closestBlockPos = blockPos;
+                    }
+
+                    //continue
+                    if (closestBlockPos != null) {
+
+                        basePos = closestBlockPos;
+                        dispenserDirection = EnumFacing.DOWN; //does nothing
+
+                        //Redstone position defining, needs rewrite
+                        if (mc.world.getBlockState(blockPos.north()).getBlock() instanceof BlockAir) redstonePos = blockPos.north();
+                        if (mc.world.getBlockState(blockPos.east()).getBlock() instanceof BlockAir) redstonePos = blockPos.east();
+                        if (mc.world.getBlockState(blockPos.south()).getBlock() instanceof BlockAir) redstonePos = blockPos.south();
+                        if (mc.world.getBlockState(blockPos.west()).getBlock() instanceof BlockAir) redstonePos = blockPos.west();
+                        if (mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir) redstonePos = blockPos.up();
+
+                        stage = 1;
+                    }
+                }
             }
         }
-
-        return false;
     }
 
-    public BlockPos doStuffWithBlockPosDirection(BlockPos blockPos, EnumFacing direction) {
+    public BlockPos getBlockPosFromDirection(BlockPos blockPos, EnumFacing direction) {
 
         if (direction.equals(EnumFacing.NORTH)) {
             return blockPos.north();
@@ -278,14 +589,17 @@ public class Dispenser32kRewrite extends Module {
         Block neighbourBlock = mc.world.getBlockState(neighbour).getBlock();
 
         if (BlockUtils.blackList.contains(neighbourBlock) || BlockUtils.shulkerList.contains(neighbourBlock)) {
-            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            mc.player.connection.sendPacket (new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
         }
 
-        BlockUtils.faceVectorPacketInstant(hitVec);
+        if (rotate.isEnable() && stage != 2) BlockUtils.faceVectorPacketInstant(hitVec);
 
         mc.playerController.processRightClickBlock(mc.player, mc.world, neighbour, opposite, hitVec, EnumHand.MAIN_HAND);
-        mc.player.swingArm(EnumHand.MAIN_HAND);
+
+        if (swing.isEnable()) mc.player.swingArm(EnumHand.MAIN_HAND);
 
         return true;
     }
 }
+
+//end of the code (bruh)
