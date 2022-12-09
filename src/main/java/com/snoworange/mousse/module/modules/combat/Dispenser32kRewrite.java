@@ -45,6 +45,7 @@ public class Dispenser32kRewrite extends Module {
     BooleanSetting autoClose;
     BooleanSetting autoDisable;
     BooleanSetting refillShulker;
+    BooleanSetting select32kSlot;
 
     public Dispenser32kRewrite() {
         super("Dispenser32kNew", "rewrite", Category.COMBAT);
@@ -61,8 +62,9 @@ public class Dispenser32kRewrite extends Module {
         autoClose = new BooleanSetting("Auto Close", true);
         autoDisable = new BooleanSetting("Auto Disable", true);
         refillShulker = new BooleanSetting("Refill Shulker", true);
+        select32kSlot = new BooleanSetting("Select 32k Slot", false);
 
-        addSetting(silent, swing, rotate, smartRedstone, autoClose, autoDisable, refillShulker);
+        addSetting(silent, swing, rotate, smartRedstone, autoClose, autoDisable, refillShulker, select32kSlot);
     }
 
     @Override
@@ -74,7 +76,6 @@ public class Dispenser32kRewrite extends Module {
         redstonePos = null;
         tempBasePos = null;
         dispenserDirection = null;
-        placeVertically = false;
     }
 
     @Override
@@ -85,7 +86,7 @@ public class Dispenser32kRewrite extends Module {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.PlayerTickEvent event) {
+    public void onTick(TickEvent.ClientTickEvent event) {
         if (this.isEnabled()) {
 
             if (mc.player == null || mc.world == null) return;
@@ -116,7 +117,7 @@ public class Dispenser32kRewrite extends Module {
                     shulkerIndex = i;
                 }
 
-                if (itemStack.getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, itemStack) >= Short.MAX_VALUE) {
+                if (itemStack.getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, itemStack) >= Enchantments.SHARPNESS.getMaxLevel()) {
                     enchantedSwordIndex = i;
                 }
             }
@@ -140,30 +141,22 @@ public class Dispenser32kRewrite extends Module {
 
             if (stage == 0) {
 
-                //placin' time
+                //Normal placement
                 if (basePos == null) {
-                    for (int j = 0; j < 3; j++) {
+                    searchBestPlacement();
+
+                    //search if we can place vertically when after searching for invalid placement
+                    if (basePos == null) {
+                        searchBestPlacementVertically();
+
+                        //if even thats not possible place block and continue
                         if (basePos == null) {
 
-                            if (j == 0) {
-                                searchBestPlacement();
-                            }
+                            //place block so we can place (?)
+                            update(dispenserIndex);
+                            placeBlock(tempBasePos);
 
-                            //1 tick later then common placement, need fix
-                            if (j == 1) {
-                                searchBestPlacementVertically();
-                            }
-
-                            //2 tick :skull:
-                            if (j == 2) {
-
-                                //place block if we cant find any possible placements
-                                update(dispenserIndex);
-                                placeBlock(tempBasePos);
-
-                                //1 tick faster boi
-                                searchBestPlacement();
-                            }
+                            searchBestPlacement();
                         }
                     }
                 }
@@ -350,6 +343,12 @@ public class Dispenser32kRewrite extends Module {
                         }
                     }
 
+                    if (select32kSlot.isEnable() && airIndex != -1) {
+                        mc.player.connection.sendPacket(new CPacketHeldItemChange(airIndex));
+                        mc.player.inventory.currentItem = airIndex;
+                        mc.playerController.updateController();
+                    }
+
                     mc.playerController.windowClick(mc.player.openContainer.windowId, enchantedSwordIndex, airIndex == -1 ? mc.player.inventory.currentItem : airIndex, ClickType.SWAP, mc.player);
                     Main.sendMessage("32k found in slot " + enchantedSwordIndex);
 
@@ -407,12 +406,19 @@ public class Dispenser32kRewrite extends Module {
                                 || mc.world.getBlockState(blockPos.up().west()).isFullBlock()
                                 || mc.world.getBlockState(blockPos.up().down()).isFullBlock()
                         )
+                                && (mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).north()).isFullBlock()
+                                || mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).east()).isFullBlock()
+                                || mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).south()).isFullBlock()
+                                || mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).west()).isFullBlock()
+                                || mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).down()).isFullBlock()
+                        )
                                 && (smartRedstone.isEnable() ? (
                                 mc.world.getBlockState(blockPos.up().north()).getBlock() instanceof BlockAir
                                         || mc.world.getBlockState(blockPos.up().east()).getBlock() instanceof BlockAir
                                         || mc.world.getBlockState(blockPos.up().south()).getBlock() instanceof BlockAir
                                         || mc.world.getBlockState(blockPos.up().west()).getBlock() instanceof BlockAir
-                        ) : mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir)
+                        ) : mc.world.getBlockState(blockPos.up(2)).getBlock() instanceof BlockAir
+                        )
                                 && mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction)).getBlock() instanceof BlockAir
                                 && mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).up()).getBlock() instanceof BlockAir
                                 && !(mc.world.getBlockState(getBlockPosFromDirection(blockPos, direction).north()).getBlock().equals(Blocks.REDSTONE_BLOCK)
@@ -492,7 +498,12 @@ public class Dispenser32kRewrite extends Module {
                     )
                             && mc.world.getBlockState(blockPos.down()).getBlock() instanceof BlockAir
                             && mc.world.getBlockState(blockPos.down(2)).getBlock() instanceof BlockAir
-                            && mc.world.getBlockState(blockPos.down(3)).isFullBlock()
+                            && (mc.world.getBlockState(blockPos.down(2).north()).isFullBlock()
+                            || mc.world.getBlockState(blockPos.down(2).east()).isFullBlock()
+                            || mc.world.getBlockState(blockPos.down(2).south()).isFullBlock()
+                            || mc.world.getBlockState(blockPos.down(2).west()).isFullBlock()
+                            || mc.world.getBlockState(blockPos.down(3)).isFullBlock()
+                    )
                             && !(mc.world.getBlockState(blockPos.down(2).north()).getBlock().equals(Blocks.REDSTONE_BLOCK)
                             || mc.world.getBlockState(blockPos.down(2).east()).getBlock().equals(Blocks.REDSTONE_BLOCK)
                             || mc.world.getBlockState(blockPos.down(2).south()).getBlock().equals(Blocks.REDSTONE_BLOCK)

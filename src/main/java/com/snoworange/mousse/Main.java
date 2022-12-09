@@ -38,7 +38,7 @@ public class Main {
 
     public static final String MOD_ID = "mousse";
     public static final String NAME = "Mousse";
-    public static final String VERSION = "v0.7.1";
+    public static final String VERSION = "v0.7.4";
 
     public static Minecraft mc = Minecraft.getMinecraft();
 

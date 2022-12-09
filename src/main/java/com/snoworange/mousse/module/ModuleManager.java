@@ -20,8 +20,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static com.snoworange.mousse.Main.mc;
 
@@ -41,9 +39,8 @@ public class ModuleManager {
         modules.add(new Criticals());
         modules.add(new AutoArmor());
         modules.add(new FastAura());
-        modules.add(new AutoAuto32k());
         modules.add(new Grab32k());
-        modules.add(new Auto32k2019());
+        modules.add(new AimDispenser32k());
         modules.add(new Notify32k());
         modules.add(new Dispenser32kRewrite());
         modules.add(new ThreadAura());
@@ -64,7 +61,7 @@ public class ModuleManager {
         modules.add(new ReverseStep());
         modules.add(new ShiftSpam());
         modules.add(new IceSpeed());
-        modules.add(new Rubberband());
+        modules.add(new MotionTP32k());
 
         //PLAYER
         modules.add(new NoFall());
