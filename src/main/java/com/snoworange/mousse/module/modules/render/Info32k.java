@@ -13,7 +13,7 @@ import javax.sound.sampled.Line;
 public class Info32k extends Module {
 
     public Info32k() {
-        super("32kInfo", "mdksmal", Category.RENDER);
+        super("32kInfo", "info's you bout 32k wepons", Category.RENDER);
     }
 
     @Override

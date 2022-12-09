@@ -1,7 +1,6 @@
 package com.snoworange.mousse.module.modules.combat;
 
 import com.snoworange.mousse.Main;
-import com.snoworange.mousse.event.listeners.PacketEvent;
 import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.setting.settings.BooleanSetting;
@@ -22,7 +21,6 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
-import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.SPacketSpawnObject;
@@ -30,17 +28,16 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+//why does this shit not work,
 public class AutoCrystal extends Module {
 
     private final Timer placeTimer = new Timer();

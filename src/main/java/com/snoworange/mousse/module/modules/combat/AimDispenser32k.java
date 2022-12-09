@@ -28,10 +28,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class Auto32k2019 extends Module {
+public class AimDispenser32k extends Module {
 
-    public Auto32k2019() {
-        super("Auto32k2019", "old auo32k lol", Category.COMBAT);
+    public AimDispenser32k() {
+        super("AimDispenser32k", "old auto32k lol", Category.COMBAT);
     }
 
     BlockPos obsidianPos;

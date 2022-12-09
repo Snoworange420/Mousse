@@ -17,16 +17,15 @@ public class Fly extends Module {
 
     NumberSetting speed;
     BooleanSetting creative;
-    BooleanSetting velocity;
 
     @Override
     public void init() {
         super.init();
+
         creative = new BooleanSetting("Creative Mode", false);
-        velocity = new BooleanSetting("Modify Velocity", true);
         speed = new NumberSetting("Speed", 1, 0, 0,1);
 
-        addSetting(creative, velocity, speed);
+        addSetting(creative, speed);
     }
 
     @Override
@@ -59,10 +58,8 @@ public class Fly extends Module {
 
             if (mc.world == null || mc.player == null) return;
 
-            if (velocity.enable) {
-                mc.player.setVelocity(0.0, 0.0, 0.0);
-                GravityUtils.moveEntityWithSpeed(mc.player, speed.getValue(), true);
-            }
+            mc.player.setVelocity(0.0, 0.0, 0.0);
+            GravityUtils.moveEntityWithSpeed(mc.player, speed.getValue(), true);
         }
     }
 }

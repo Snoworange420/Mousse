@@ -7,6 +7,7 @@
     "MixinGuiMainMenu",
     "MixinGuiScreen",
     "MixinNetworkManager",
-    "MixinAbstractClientPlayer"
+    "MixinAbstractClientPlayer",
+    "MixinGuiChat"
   ]
 }

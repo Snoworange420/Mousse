@@ -14,7 +14,7 @@ public class Load extends Command {
     public void onCommand(String[] args, String command) {
         if (args.length >= 0) {
             FileUtils.loadAll();
-            Main.sendMessage("Loaded configs!");
+            Main.sendMessage("Loaded configs! (may prob not work)");
         }
     }
 }

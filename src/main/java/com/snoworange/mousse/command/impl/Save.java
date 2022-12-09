@@ -15,7 +15,7 @@ public class Save extends Command {
     public void onCommand(String[] args, String command) {
         if (args.length >= 0) {
             FileUtils.saveAll();
-            Main.sendMessage("Saved configs!");
+            Main.sendMessage("Saved configs! (may prob not work)");
         }
     }
 }
