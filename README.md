@@ -4,7 +4,7 @@ An advanced utility mod, aimed at use in Minecraft 1.12.2 anarchy servers.
 ![minecraft](https://img.shields.io/badge/Minecraft-1.12.2-yellowgreen)
 ![minecraft](https://img.shields.io/badge/Keybind-none-pink)
 ![GitHub all releases](https://img.shields.io/github/downloads/Snoworange420/Mousse/total?color=seagreen)
-![GitHub workflow status](https://img.shields.io/github/actions/workflow/status/Snoworange420/Mousse/sub_directory/test.yml?branch=main)
+![GitHub workflow status](https://img.shields.io/github/actions/workflow/status/Snoworange420/Mousse/.github/test.yml?branch=main)
 [![CodeFactor](https://www.codefactor.io/repository/github/Snoworange420/Mousse/badge)](https://www.codefactor.io/repository/github/Snoworange420/Mousse)
 ![Lines of code](https://img.shields.io/tokei/lines/github/Snoworange420/Mousse?color=darkred&label=Lines%20of%20code)
 ![GitHub repo size](https://img.shields.io/github/repo-size/Snoworange420/Mousse)
