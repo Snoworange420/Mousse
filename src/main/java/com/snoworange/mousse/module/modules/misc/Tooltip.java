@@ -1,37 +1,48 @@
-package com.snoworange.mousse.module.modules.render;
+package com.snoworange.mousse.module.modules.misc;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
+import com.snoworange.mousse.setting.settings.BooleanSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.ItemShulkerBox;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public class ShulkerPreview extends Module {
+public class Tooltip extends Module {
 
     private static final ResourceLocation SHULKER_GUI_TEXTURE = new ResourceLocation("textures/27slots.png");
 
-    public ShulkerPreview() {
-        super("ShulkerPreview", "ur dad", Category.RENDER);
+    public static BooleanSetting shulker;
+    public static BooleanSetting alwaysDura;
+    public static BooleanSetting repaircost;
+
+    public Tooltip() {
+        super("Tooltip", "modifies tooltip", Category.MISC);
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        shulker = new BooleanSetting("Shulker Box", true);
+        alwaysDura = new BooleanSetting("Always Durability", true);
+        repaircost = new BooleanSetting("Render Repair Cost", false);
+
+        addSetting(shulker, alwaysDura);
     }
 
     @Override
     public void onEnable() {
         super.onEnable();
+        Main.sendMessage("[" + this.getName() + "] " + ChatFormatting.DARK_RED +  "WARN: the module is broken and woudn't work as intended!!");
     }
 
     @Override
@@ -39,9 +50,10 @@ public class ShulkerPreview extends Module {
         super.onDisable();
     }
 
+    //Shulker
     public static Minecraft mc = Minecraft.getMinecraft();
 
-    public static void renderToolTip(final ItemStack itemStack, final int n, final int n2, final CallbackInfo callbackInfo) {
+    public static void renderShulker(final ItemStack itemStack, final int n, final int n2, final CallbackInfo callbackInfo) {
         final NBTTagCompound tagCompound = itemStack.getTagCompound();
         if (tagCompound != null && tagCompound.hasKey("BlockEntityTag", 10)) {
             final NBTTagCompound blockEntityTag = tagCompound.getCompoundTag("BlockEntityTag");
@@ -88,4 +100,5 @@ public class ShulkerPreview extends Module {
             }
         }
     }
+
 }

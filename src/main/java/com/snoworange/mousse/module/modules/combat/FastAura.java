@@ -10,10 +10,12 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
+import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class FastAura extends Module {
 
@@ -24,7 +26,6 @@ public class FastAura extends Module {
     ModeSetting attackMode;
     BooleanSetting rotate;
     BooleanSetting silent;
-
     private int superWeaponIndex = -1;
 
     @Override
@@ -32,7 +33,6 @@ public class FastAura extends Module {
         super.init();
 
         attackMode = new ModeSetting("Attack Mode", "Vanilla", "Vanilla", "Packet", "Both");
-        rotate = new BooleanSetting("Rotate", null, false);
         silent = new BooleanSetting("Silent Swap", null, true);
 
         addSetting(attackMode, silent);
@@ -51,11 +51,11 @@ public class FastAura extends Module {
     }
 
     @SubscribeEvent
-    public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+    public void onFastTick(TickEvent event) {
 
         if (mc.world == null || mc.player == null) return;
 
-        if (this.toggled && event.getEntityLiving() instanceof EntityPlayer) {
+        if (this.isEnabled()) {
 
             if (mc.world == null || mc.player == null) return;
 
@@ -81,6 +81,7 @@ public class FastAura extends Module {
                                 mc.playerController.updateController();
 
                                 mc.player.connection.sendPacket(new CPacketUseEntity(target));
+
 
                                 mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
                                 mc.player.swingArm(EnumHand.MAIN_HAND);

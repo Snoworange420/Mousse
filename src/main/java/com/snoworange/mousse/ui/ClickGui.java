@@ -65,7 +65,7 @@ public class ClickGui extends GuiScreen {
         int xoffsetModules = 0;
         for (Category c : Category.values()) {
             for (Module m : Main.moduleManager.getModuleList()) {
-                if (c.equals(m.getCategory())) {
+                if (c.equals(m.getCategory()) && m.getType() < 1) {
                     if (c.opened) {
                         Gui.drawRect((int) posX + xoffsetModules, (int) (posY + 1 + yoffsetModules), (int) (posX + 80 + xoffsetModules), (int) ((float) posY + 17.5 + yoffsetModules), m.isToggled() ? ThemeManager.getTheme().getC1().getRGB() : ThemeManager.getTheme().getC5().getRGB());
                         mc.fontRenderer.drawString(m.getName(), (int) ((float) posX + 2.5 + xoffsetModules), (int) ((float) posY + 6.5) + yoffsetModules, new Color(170, 170, 170).getRGB());
@@ -163,7 +163,7 @@ public class ClickGui extends GuiScreen {
         //Click stuff
         for (Category c : Category.values()) {
             for (Module m : Main.moduleManager.getModuleList()) {
-                if (c.equals(m.getCategory())) {
+                if (c.equals(m.getCategory()) && m.getType() < 1) {
                     if (c.opened) {
                         if (isInside(mouseX, mouseY, posX + xoffsetModules, posY + 1 + yoffsetModules, posX + 80 + xoffsetModules, posY + 15 + yoffsetModules)) {
                             if (mouseButton == 0) {

@@ -5,10 +5,6 @@ import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.util.entity.InventoryUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-
-import javax.sound.sampled.Line;
 
 public class Info32k extends Module {
 

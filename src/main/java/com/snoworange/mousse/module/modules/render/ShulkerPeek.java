@@ -37,7 +37,7 @@ public class ShulkerPeek extends Module {
     public static InventoryBasic getFromItemNBT(NBTTagCompound tag) {
 
         NonNullList items = NonNullList.withSize((int) 27, (Object) ItemStack.EMPTY);
-        String customName = "";
+        String customName = "Shulker Box";
         if (tag.hasKey("Items", 9)) {
             ItemStackHelper.loadAllItems((NBTTagCompound) tag, (NonNullList) items);
         }
@@ -79,11 +79,9 @@ public class ShulkerPeek extends Module {
                     }
                 }
 
-                /*
-                Main.sendMessage("Opened shulker box.");
+                Main.sendMessage("Opened container.");
                 mc.world.playSound(mc.player, mc.player.posX, mc.player.posY, mc.player.posZ, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5f, 1.0f);
 
-                 */
             } else {
                 Main.sendMessage("Coudn't find any container in your hands!");
             }

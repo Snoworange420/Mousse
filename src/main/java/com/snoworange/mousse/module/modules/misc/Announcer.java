@@ -8,8 +8,6 @@ public class Announcer extends Module {
         super("Announcer", "announces things", Category.MISC, 0);
      }
 
-     private static Announcer instance;
-
      @Override
      public void onEnable() {
          super.onEnable();
@@ -20,11 +18,5 @@ public class Announcer extends Module {
          super.onDisable();
      }
 
-     public static Announcer getInstance() {
-         if (instance == null) {
-             instance = new Announcer();
-         }
-         return instance;
-     }
 }
 

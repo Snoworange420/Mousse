@@ -116,9 +116,110 @@ public class RenderUtils2
         glShutdown2d();
     }
 
+    public static void drawFilledBox(final BlockPos blockPos, final double height, final Color color) {
+        glSetup3d();
+        final AxisAlignedBB box = new AxisAlignedBB(blockPos.getX() - mc.getRenderManager().viewerPosX, blockPos.getY() - mc.getRenderManager().viewerPosY, blockPos.getZ() - mc.getRenderManager().viewerPosZ, blockPos.getX() + 1 - mc.getRenderManager().viewerPosX, blockPos.getY() + 1 - mc.getRenderManager().viewerPosY, blockPos.getZ() + 1 - mc.getRenderManager().viewerPosZ);
+        drawFilledBox(RenderUtils2.bufferbuilder, box.minX, box.minY, box.minZ, box.maxX, box.maxY + height, box.maxZ, color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, color.getAlpha() / 255.0f);
+        glShutdown3d();
+    }
+
+    public static void drawFilledBox(final BufferBuilder builder, final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final float red, final float green, final float blue, final float alpha) {
+        RenderUtils2.bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
+        builder.pos(minX, minY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, minY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, minY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, minY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, maxY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, maxY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, maxY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, minY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, maxY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, minY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, minY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, minY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, maxY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, maxY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, maxY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, minY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, maxY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, minY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, minY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, minY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, minY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, minY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, minY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, maxY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, maxY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(minX, maxY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, maxY, minZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, maxY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, maxY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        builder.pos(maxX, maxY, maxZ).color(red, green, blue, 0.4f).endVertex();
+        RenderUtils2.tessellator.draw();
+    }
+
+    public static void drawBlockOutline(final BlockPos blockPos, final double height, final Color color, final Color endColor) {
+        glSetup3d();
+        final AxisAlignedBB box = new AxisAlignedBB(blockPos.getX() - mc.getRenderManager().viewerPosX, blockPos.getY() - mc.getRenderManager().viewerPosY, blockPos.getZ() - mc.getRenderManager().viewerPosZ, blockPos.getX() + 1 - mc.getRenderManager().viewerPosX, blockPos.getY() + 1 - mc.getRenderManager().viewerPosY, blockPos.getZ() + 1 - mc.getRenderManager().viewerPosZ);
+        drawGradientBlockOutline(RenderUtils2.bufferbuilder, box.minX, box.minY, box.minZ, box.maxX, box.maxY + height, box.maxZ, color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, color.getAlpha() / 255.0f, endColor);
+        glShutdown3d();
+    }
+
+    public static void drawBlockOutline(final BufferBuilder buffer, final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final float red, final float green, final float blue, final float alpha) {
+        RenderUtils2.bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
+        buffer.pos(minX, minY, minZ).color(red, green, blue, 0.0f).endVertex();
+        buffer.pos(minX, minY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, minY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, minY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, minY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, minY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, maxY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, maxY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, maxY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, maxY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, maxY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, maxY, maxZ).color(red, green, blue, 0.0f).endVertex();
+        buffer.pos(minX, minY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, maxY, maxZ).color(red, green, blue, 0.0f).endVertex();
+        buffer.pos(maxX, minY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, maxY, minZ).color(red, green, blue, 0.0f).endVertex();
+        buffer.pos(maxX, minY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, minY, minZ).color(red, green, blue, 0.0f).endVertex();
+        RenderUtils2.tessellator.draw();
+    }
+
+    public static void drawGradientBlockOutline(final BufferBuilder buffer, final double minX, final double minY, final double minZ, final double maxX, final double maxY, final double maxZ, final float red, final float green, final float blue, final float alpha, final Color endColor) {
+        GlStateManager.disableCull();
+        GlStateManager.disableAlpha();
+        GlStateManager.shadeModel(7425);
+        RenderUtils2.bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
+        final float red2 = endColor.getRed() / 255.0f;
+        final float green2 = endColor.getGreen() / 255.0f;
+        final float blue2 = endColor.getBlue() / 255.0f;
+        buffer.pos(minX, minY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, minY, minZ).color(red2, green2, blue2, alpha).endVertex();
+        buffer.pos(maxX, minY, maxZ).color(red2, green2, blue2, alpha).endVertex();
+        buffer.pos(minX, minY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, minY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, maxY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, maxY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, minY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, minY, maxZ).color(red2, green2, blue2, alpha).endVertex();
+        buffer.pos(maxX, maxY, maxZ).color(red2, green2, blue2, alpha).endVertex();
+        buffer.pos(maxX, maxY, minZ).color(red2, green2, blue2, alpha).endVertex();
+        buffer.pos(maxX, minY, minZ).color(red2, green2, blue2, alpha).endVertex();
+        buffer.pos(maxX, maxY, minZ).color(red2, green2, blue2, alpha).endVertex();
+        buffer.pos(minX, maxY, minZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(minX, maxY, maxZ).color(red, green, blue, alpha).endVertex();
+        buffer.pos(maxX, maxY, maxZ).color(red2, green2, blue2, alpha).endVertex();
+        RenderUtils2.tessellator.draw();
+        GlStateManager.enableCull();
+        GlStateManager.enableAlpha();
+        GlStateManager.shadeModel(7424);
+    }
+
     static {
         RenderUtils2.tessellator = Tessellator.getInstance();
         RenderUtils2.bufferbuilder = RenderUtils2.tessellator.getBuffer();
     }
 }
-

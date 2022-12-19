@@ -76,7 +76,7 @@ public class Grab32k extends Module {
             double hopperBlockDistance = 4;
             BlockPos closestHopperPos = null;
 
-            for (BlockPos hopperPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 4, mc.player.posY - 3, mc.player.posZ - 4), new BlockPos(mc.player.posX + 4, mc.player.posY + 3, mc.player.posZ + 4))) {
+            for (BlockPos hopperPos : BlockPos.getAllInBox(new BlockPos(mc.player.posX - 6, mc.player.posY - 3, mc.player.posZ - 6), new BlockPos(mc.player.posX + 6, mc.player.posY + 3, mc.player.posZ + 6))) {
 
                 if (mc.player.getDistance(hopperPos.getX(), hopperPos.getY(), hopperPos.getZ()) < hopperBlockDistance && mc.world.getBlockState(hopperPos.up()).getBlock() instanceof BlockShulkerBox && mc.world.getBlockState(hopperPos).getBlock() instanceof BlockHopper) {
                     hopperBlockDistance = mc.player.getDistance(hopperPos.getX(), hopperPos.getY(), hopperPos.getZ());

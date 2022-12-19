@@ -9,6 +9,7 @@ import com.snoworange.mousse.module.modules.misc.*;
 import com.snoworange.mousse.module.modules.movement.*;
 import com.snoworange.mousse.module.modules.player.*;
 import com.snoworange.mousse.module.modules.render.*;
+import com.snoworange.mousse.module.modules.system.GuiTheme;
 import com.snoworange.mousse.module.modules.system.HUD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -46,6 +47,7 @@ public class ModuleManager {
         modules.add(new ThreadAura());
         modules.add(new Info32k());
         modules.add(new AutoCrystal());
+        modules.add(new AutoTotem());
 
         //EXPLOIT
         modules.add(new SecretClose());
@@ -76,8 +78,7 @@ public class ModuleManager {
         modules.add(new DiscordRPC());
         modules.add(new Announcer());
         modules.add(new GuiTheme());
-        //modules.add(new TrueDurability());
-        //modules.add(new DebugModule());
+        modules.add(new Tooltip());
 
         //RENDER
         modules.add(new ShulkerPeek());
@@ -86,7 +87,7 @@ public class ModuleManager {
         modules.add(new LightningBolt());
         modules.add(new HopperRadius());
         modules.add(new Particles());
-        modules.add(new ShulkerPreview());
+        modules.add(new SelectionHighlight());
 
         //WORK IN PROGRESS
 
@@ -129,11 +130,16 @@ public class ModuleManager {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        modules.forEach(module -> {
-            if (module.isEnabled()) {
-                module.onTick();
-            }
-        });
+        try {
+            modules.forEach(module -> {
+                if (module.isEnabled()) {
+                    module.onTick();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Main.sendMessage(e.toString());
+        }
     }
 
     @SubscribeEvent

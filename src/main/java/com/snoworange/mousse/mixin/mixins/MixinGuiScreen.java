@@ -1,7 +1,7 @@
 package com.snoworange.mousse.mixin.mixins;
 
 import com.snoworange.mousse.Main;
-import com.snoworange.mousse.module.modules.render.ShulkerPreview;
+import com.snoworange.mousse.module.modules.misc.Tooltip;
 import com.snoworange.mousse.util.render.ParticleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -45,8 +45,8 @@ public class MixinGuiScreen {
 
     @Inject(method = { "renderToolTip" }, at = { @At("HEAD") }, cancellable = true)
     public void renderToolTip(final ItemStack itemStack, final int x, final int y, final CallbackInfo ci) {
-        if (Main.moduleManager.getModule("ShulkerPreview").isEnabled()) {
-            ShulkerPreview.renderToolTip(itemStack, x, y, ci);
+        if (Main.moduleManager.getModule("Tooltip").isEnabled() && Tooltip.shulker.isEnable()) {
+            Tooltip.renderShulker(itemStack, x, y, ci);
         }
     }
 }

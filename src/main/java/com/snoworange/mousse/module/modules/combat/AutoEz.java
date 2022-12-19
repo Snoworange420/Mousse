@@ -58,7 +58,6 @@ public class AutoEz extends Module {
         }
     }
 
-    /*
     @SubscribeEvent
     public void onPacketSend(final PacketEvent.Send event) {
         if (event.getPacket() instanceof CPacketUseEntity) {
@@ -67,14 +66,10 @@ public class AutoEz extends Module {
                 final Entity target = packet.getEntityFromWorld((World) mc.world);
                 if (target instanceof EntityPlayer) {
                     AutoEz.targets.put(target.getName(), (EntityPlayer)target);
-                    Main.sendMessage("Found target!");
                 }
             }
         }
     }
-
-     */
-
     @SubscribeEvent
     public void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
         if (this.toggled && event.getEntityLiving() instanceof EntityPlayer) {

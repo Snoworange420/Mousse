@@ -4,17 +4,27 @@ import com.snoworange.mousse.Main;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class InventoryUtils {
+
+    public static Minecraft mc = Minecraft.getMinecraft();
 
     public static int amountInInventory(Item item) {
         int quantity = 0;
@@ -26,90 +36,6 @@ public class InventoryUtils {
         if(Minecraft.getMinecraft().player.getHeldItemOffhand().getItem() == item) quantity += Minecraft.getMinecraft().player.getHeldItemOffhand().getCount();
 
         return quantity;
-    }
-
-    public static int amountInHotbar(Item item) {
-        int quantity = 0;
-
-        for(int i = 44; i > 35; i--) {
-            ItemStack stackInSlot = Minecraft.getMinecraft().player.inventoryContainer.getSlot(i).getStack();
-            if(stackInSlot.getItem() == item) quantity += stackInSlot.getCount();
-        }
-        if(Minecraft.getMinecraft().player.getHeldItemOffhand().getItem() == item) quantity += Minecraft.getMinecraft().player.getHeldItemOffhand().getCount();
-
-        return quantity;
-    }
-
-    public static int amountBlockInHotbar(Block block) {return amountInHotbar(new ItemStack(block).getItem());}
-
-    public static int findItem(Item item) {
-        int index = -1;
-        for(int i = 44; i > -1; i--) {
-            if(Minecraft.getMinecraft().player.inventory.getStackInSlot(i).getItem() == item) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    }
-
-    public static int findBlock(Block block) {
-        return findItem(new ItemStack(block).getItem());
-    }
-
-    public static int findItemInHotbar(Item item) {
-        int index = -1;
-        for(int i = 0; i < 9; i++) {
-            if(Minecraft.getMinecraft().player.inventory.getStackInSlot(i).getItem() == item) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    }
-
-    public static int findBlockInHotbar(Block block) {
-        return findItemInHotbar(new ItemStack(block).getItem());
-    }
-
-    public static int getBlockInHotbar() {
-        for(int i = 0; i < 9; i++) {
-            if(
-                    Minecraft.getMinecraft().player.inventory.getStackInSlot(i) == ItemStack.EMPTY
-                            || !(Minecraft.getMinecraft().player.inventory.getStackInSlot(i).getItem() instanceof ItemBlock)
-                            || !Block.getBlockFromItem(Minecraft.getMinecraft().player.inventory.getStackInSlot(i).getItem()).getDefaultState().isFullBlock()
-            ) continue;
-
-            return i;
-        }
-
-        return -1;
-    }
-
-    public static int getBlank() {
-        int index = -1;
-        for(int i = 44; i > -1; i--) {
-            if(Minecraft.getMinecraft().player.inventory.getStackInSlot(i).isEmpty()) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    }
-
-    public static int getHotbarBlank() {
-        int index = -1;
-        for(int i = 0; i < 9; i++) {
-            if(Minecraft.getMinecraft().player.inventory.getStackInSlot(i).isEmpty()) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    }
-
-    public static int getSlotIndex(int index) {
-        return index < 9 ? index + 36 : index;
     }
 
     public static int getWeapon() {
@@ -169,5 +95,37 @@ public class InventoryUtils {
         }
 
         return false;
+    }
+
+    public static int findInv(Item item) {
+        for (int i = 0; i < 36; ++i) {
+            Item slot = mc.player.inventory.getStackInSlot(i).getItem();
+            if (slot.equals(item)) {
+                if (i < 9) {
+                    i += 36;
+                }
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int findShulker() {
+        for (int i = 0; i < 36; ++i) {
+            Item slot = mc.player.inventory.getStackInSlot(i).getItem();
+            if (slot instanceof ItemShulkerBox) {
+                if (i < 9) {
+                    i += 36;
+                }
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static void swapItem(int from, int to) {
+        mc.playerController.windowClick(mc.player.inventoryContainer.windowId, from, 0, ClickType.PICKUP, mc.player);
+        mc.playerController.windowClick(mc.player.inventoryContainer.windowId, to, 0, ClickType.PICKUP, mc.player);
+        mc.playerController.windowClick(mc.player.inventoryContainer.windowId, from, 0, ClickType.PICKUP, mc.player);
     }
 }

@@ -31,7 +31,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 public class AimDispenser32k extends Module {
 
     public AimDispenser32k() {
-        super("AimDispenser32k", "old auto32k lol", Category.COMBAT);
+        super("Aim32k", "old auto32k lol", Category.COMBAT);
     }
 
     BlockPos obsidianPos;

@@ -3,7 +3,9 @@ package com.snoworange.mousse.module;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import com.snoworange.mousse.Main;
 import com.snoworange.mousse.setting.Setting;
+import com.snoworange.mousse.util.chat.ChatUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public abstract class Module {
     public boolean toggled;
 
     public int type;
-    public List<Setting> settings = new ArrayList<Setting>();
+    public List<Setting<?>> settings = new ArrayList<Setting<?>>();
 
     public Minecraft mc = Minecraft.getMinecraft();
 
@@ -121,15 +123,23 @@ public abstract class Module {
 
     public void onEnable() {
         MinecraftForge.EVENT_BUS.register(this);
+
         if (Main.moduleManager.getModule("Announcer").isToggled() && !Objects.equals(this.name, "ShulkerPeek") && !Objects.equals(this.name, "GuiTheme")) {
-            Main.sendMessage(this.name + ChatFormatting.GREEN + " enabled." + ChatFormatting.RESET);
+
+            if (mc.world != null) {
+                ChatUtils.sendMessage("{}" + TextFormatting.GREEN + " enabled.", this.name);
+            }
         }
     }
 
     public void onDisable() {
         MinecraftForge.EVENT_BUS.register(this);
+
         if (Main.moduleManager.getModule("Announcer").isToggled() && !Objects.equals(this.name, "ShulkerPeek") && !Objects.equals(this.name, "GuiTheme")) {
-            Main.sendMessage(this.name + ChatFormatting.RED + " disabled." + ChatFormatting.RESET);
+
+            if (mc.world != null) {
+                ChatUtils.sendMessage("{}" + TextFormatting.RED + " disabled.", this.name);
+            }
         }
     }
 
@@ -171,7 +181,11 @@ public abstract class Module {
 
     }
 
+    public Setting getSettingByName(final String s) {
+        return this.settings.stream().findFirst().orElse(null);
+    }
+
     public void addSetting(Setting... settings) {
-        this.settings.addAll(Arrays.asList(settings));
+        this.settings.addAll(Arrays.<Setting<?>>asList(settings));
     }
 }

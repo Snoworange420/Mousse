@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
-
+//hi
 @Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION, acceptedMinecraftVersions = "[1.12.2]")
 public class Main {
 
@@ -38,7 +38,7 @@ public class Main {
 
     public static final String MOD_ID = "mousse";
     public static final String NAME = "Mousse";
-    public static final String VERSION = "v0.7.4";
+    public static final String VERSION = "v0.8.0";
 
     public static Minecraft mc = Minecraft.getMinecraft();
 
@@ -66,7 +66,7 @@ public class Main {
         themeManager = new ThemeManager();
 
         ClickGUI = new KeyBinding("ClickGUI", Keyboard.KEY_NONE, "Mousse");
-        ShulkerPeek = new KeyBinding("ShulkerPreview Peek Binding", Keyboard.KEY_RCONTROL, "Mousse");
+        ShulkerPeek = new KeyBinding("ShulkerPreview Peek Binding", Keyboard.KEY_NONE, "Mousse");
 
         ClientRegistry.registerKeyBinding(ClickGUI);
         ClientRegistry.registerKeyBinding(ShulkerPeek);
@@ -104,7 +104,7 @@ public class Main {
 
         if (Minecraft.getMinecraft().world == null || Minecraft.getMinecraft().player == null) return;
 
-        Minecraft.getMinecraft().player.sendMessage(new TextComponentString( ChatFormatting.RESET + "[" + Main.NAME + "] " + msg));
+        Minecraft.getMinecraft().player.sendMessage(new TextComponentString( ChatFormatting.DARK_GREEN + "[" + Main.NAME + "] " + ChatFormatting.RESET + msg));
     }
 
     @SubscribeEvent

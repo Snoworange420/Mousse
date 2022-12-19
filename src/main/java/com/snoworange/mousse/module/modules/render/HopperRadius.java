@@ -1,24 +1,18 @@
 package com.snoworange.mousse.module.modules.render;
 
-import com.snoworange.mousse.Main;
 import com.snoworange.mousse.event.listeners.PacketEvent;
 import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
-import com.snoworange.mousse.module.modules.exploit.SecretClose;
-import com.snoworange.mousse.module.modules.exploit.XCarry;
 import com.snoworange.mousse.setting.settings.NumberSetting;
-import com.snoworange.mousse.util.render.ColorUtils;
 import com.snoworange.mousse.util.render.RenderUtils2;
 import com.snoworange.mousse.util.render.RenderUtils3;
 import net.minecraft.block.BlockHopper;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.CPacketCloseWindow;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.server.SPacketCloseWindow;
 import net.minecraft.network.play.server.SPacketOpenWindow;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -116,9 +110,9 @@ public class HopperRadius extends Module {
 
             if (mc.world == null || mc.player == null) return;
 
-            if (this.wallHeight < (double) height.getValue()) {
+            if (this.wallHeight < (double) height.getValue() / 2) {
                 this.wallHeight += 0.005 * (double) height.getValue();
-            } else if (this.wallHeight > (double) height.getValue()) {
+            } else if (this.wallHeight > (double) height.getValue() / 2) {
                 this.wallHeight -= 0.01;
             }
 

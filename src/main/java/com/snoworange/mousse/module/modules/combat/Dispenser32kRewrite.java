@@ -5,12 +5,14 @@ import com.snoworange.mousse.module.Category;
 import com.snoworange.mousse.module.Module;
 import com.snoworange.mousse.setting.settings.BooleanSetting;
 import com.snoworange.mousse.util.block.BlockUtils;
+import com.snoworange.mousse.util.entity.InventoryUtils;
+import com.snoworange.mousse.util.math.Timer;
 import net.minecraft.block.*;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiHopper;
 import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
@@ -37,6 +39,7 @@ public class Dispenser32kRewrite extends Module {
     public BlockPos redstonePos;
     public EnumFacing dispenserDirection;
     public boolean placeVertically;
+    Timer timeoutTimer = new Timer();
 
     BooleanSetting silent;
     BooleanSetting swing;
@@ -44,8 +47,9 @@ public class Dispenser32kRewrite extends Module {
     BooleanSetting smartRedstone;
     BooleanSetting autoClose;
     BooleanSetting autoDisable;
-    BooleanSetting refillShulker;
     BooleanSetting select32kSlot;
+    BooleanSetting debugMessages;
+    BooleanSetting timeout;
 
     public Dispenser32kRewrite() {
         super("Dispenser32kNew", "rewrite", Category.COMBAT);
@@ -61,15 +65,18 @@ public class Dispenser32kRewrite extends Module {
         smartRedstone = new BooleanSetting("Smart Redstone", true);
         autoClose = new BooleanSetting("Auto Close", true);
         autoDisable = new BooleanSetting("Auto Disable", true);
-        refillShulker = new BooleanSetting("Refill Shulker", true);
         select32kSlot = new BooleanSetting("Select 32k Slot", false);
+        debugMessages = new BooleanSetting("Debug Messages", false);
+        timeout = new BooleanSetting("Timeout", true);
 
-        addSetting(silent, swing, rotate, smartRedstone, autoClose, autoDisable, refillShulker, select32kSlot);
+        addSetting(silent, swing, rotate, smartRedstone, autoClose, autoDisable, select32kSlot, debugMessages, timeout);
     }
 
     @Override
     public void onEnable() {
         super.onEnable();
+
+        timeoutTimer.reset();
 
         stage = 0;
         basePos = null;
@@ -82,6 +89,10 @@ public class Dispenser32kRewrite extends Module {
     public void onDisable() {
         super.onDisable();
 
+        if (stage != 8 && mc.currentScreen instanceof GuiDispenser) {
+            mc.player.closeScreen();
+        }
+
         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
     }
 
@@ -91,11 +102,15 @@ public class Dispenser32kRewrite extends Module {
 
             if (mc.player == null || mc.world == null) return;
 
+            if (timeoutTimer.passedMs(3200L) && timeout.isEnable()) disable();
+
+            //item checks
             int hopperIndex = -1;
             int redstoneIndex = -1;
             int dispenserIndex = -1;
-            int shulkerIndex = -1;
+            int shulkerIndex = InventoryUtils.findShulker();
             int enchantedSwordIndex = -1;
+            int revertedSwordIndex = -1;
 
             for (int i = 0; i < 9; i++) {
 
@@ -113,16 +128,16 @@ public class Dispenser32kRewrite extends Module {
                     dispenserIndex = i;
                 }
 
-                if (itemStack.getItem() instanceof ItemShulkerBox) {
-                    shulkerIndex = i;
+                if (itemStack.getItem() instanceof ItemSword && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, itemStack) > Enchantments.SHARPNESS.getMaxLevel()) {
+                    enchantedSwordIndex = i;
                 }
 
-                if (itemStack.getItem().equals(Items.DIAMOND_SWORD) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, itemStack) >= Enchantments.SHARPNESS.getMaxLevel()) {
-                    enchantedSwordIndex = i;
+                if (itemStack.getItem() instanceof ItemSword && EnchantmentHelper.getEnchantmentLevel(Enchantments.SHARPNESS, itemStack) <= Enchantments.SHARPNESS.getMaxLevel()) {
+                    revertedSwordIndex = i;
                 }
             }
 
-            if (stage == 0 && (hopperIndex == -1 || dispenserIndex == -1 ||  redstoneIndex == -1)) {
+            if (stage == 0 && (hopperIndex == -1 || dispenserIndex == -1 ||  redstoneIndex == -1 || shulkerIndex == -1)) {
 
                 if (hopperIndex == -1) {
                     Main.sendMessage("Missing hopper in your hotbar!");
@@ -134,6 +149,10 @@ public class Dispenser32kRewrite extends Module {
 
                 if (redstoneIndex == -1) {
                     Main.sendMessage("Missing redstone block in your hotbar!");
+                }
+
+                if (shulkerIndex == -1) {
+                    Main.sendMessage("Cannot find shulker box in your inventory!");
                 }
 
                 disable();
@@ -165,46 +184,7 @@ public class Dispenser32kRewrite extends Module {
             }
 
             if (stage == 1) {
-
-                int airIndex = -1;
-
-                //bajundsiohvuoioauodabsvsaiodosadv
-                if (refillShulker.isEnable() && shulkerIndex == -1) {
-
-                    //look for empty slot to swap shulker
-                    for (int i = 0; i < 9; i++) {
-                        ItemStack itemStack = mc.player.inventory.mainInventory.get(i);
-                        if (itemStack.getItem() instanceof ItemAir) {
-                            airIndex = i;
-                        }
-                    }
-
-                    //search shulker box
-                    for (int i = 9; i < 36; ++i) {
-                        final ItemStack stack = mc.player.inventory.getStackInSlot(i);
-                        if (stack != ItemStack.EMPTY) {
-                            if (stack.getItem() instanceof ItemBlock) {
-                                final Block block = ((ItemBlock) stack.getItem()).getBlock();
-                                if (BlockUtils.shulkerList.contains(block)) {
-                                    shulkerIndex = i;
-                                }
-                            }
-                        }
-                    }
-
-                    //swap shulker box
-                    if (shulkerIndex != -1) {
-                        mc.playerController.windowClick(mc.player.openContainer.windowId, shulkerIndex, airIndex != -1 ? airIndex : mc.player.inventory.currentItem, ClickType.SWAP, (EntityPlayer) mc.player);
-                    }
-                }
-
-                //ohno
-                if (shulkerIndex == -1) {
-                    Main.sendMessage("Coudn't find any shulker box in your " + (refillShulker.isEnable() ? "inventory!" : "hotbar!"));
-                    disable();
-                }
-
-                stage = 2;
+                stage = 2; //here should come something but i removed idk
             }
 
             if (stage == 2) {
@@ -222,6 +202,8 @@ public class Dispenser32kRewrite extends Module {
                 } else if (dispenserDirection == EnumFacing.WEST) {
                     yaw = 91.0f;
                 }
+
+                if (debugMessages.isEnable()) Main.sendMessage("Dispenser direction: " + dispenserDirection.getOpposite().getName() + ", Place Vertically: " + placeVertically);
 
                 //Sends rotation packet to rotate dispenser, if needed
                 mc.player.connection.sendPacket(new CPacketPlayer.Rotation(!placeVertically ? yaw : 0, !placeVertically ? mc.player.rotationPitch : -90, mc.player.onGround));
@@ -260,9 +242,12 @@ public class Dispenser32kRewrite extends Module {
                 if (mc.player.openContainer != null && mc.player.openContainer instanceof ContainerDispenser && mc.player.openContainer.inventorySlots != null) {
 
                     //swap shulker box
-                    if (mc.player.openContainer.inventorySlots.get(0).getStack().isEmpty()) mc.playerController.windowClick(mc.player.openContainer.windowId, mc.player.openContainer.inventorySlots.get(0).slotNumber, shulkerIndex, ClickType.SWAP, mc.player);
+                    if (mc.player.openContainer.inventorySlots.get(0).getStack().isEmpty()) {
+                        //mausbutton 0
+                        mc.playerController.windowClick(mc.player.openContainer.windowId, shulkerIndex, 0, ClickType.QUICK_MOVE, mc.player);
+                    }
 
-                    //check if shulker is "accutually" is swapped
+                    //check if shulker is "actually" is swapped
                     if (mc.player.openContainer.inventorySlots.get(0).getStack().getItem() instanceof ItemShulkerBox) {
 
                         if (mc.currentScreen instanceof GuiDispenser) mc.player.closeScreen();
@@ -343,14 +328,24 @@ public class Dispenser32kRewrite extends Module {
                         }
                     }
 
-                    if (select32kSlot.isEnable() && airIndex != -1) {
-                        mc.player.connection.sendPacket(new CPacketHeldItemChange(airIndex));
-                        mc.player.inventory.currentItem = airIndex;
-                        mc.playerController.updateController();
+                    if (select32kSlot.isEnable()) {
+
+                        if (revertedSwordIndex != -1) {
+                            mc.player.connection.sendPacket(new CPacketHeldItemChange(revertedSwordIndex));
+                            mc.player.inventory.currentItem = revertedSwordIndex;
+                            mc.playerController.updateController();
+                        }
+
+                        if (airIndex != -1) {
+                            mc.player.connection.sendPacket(new CPacketHeldItemChange(airIndex));
+                            mc.player.inventory.currentItem = airIndex;
+                            mc.playerController.updateController();
+                        }
                     }
 
-                    mc.playerController.windowClick(mc.player.openContainer.windowId, enchantedSwordIndex, airIndex == -1 ? mc.player.inventory.currentItem : airIndex, ClickType.SWAP, mc.player);
-                    Main.sendMessage("32k found in slot " + enchantedSwordIndex);
+                    mc.playerController.windowClick(mc.player.openContainer.windowId, enchantedSwordIndex, airIndex != -1 ? airIndex : (revertedSwordIndex != -1 ? revertedSwordIndex : mc.player.inventory.currentItem), ClickType.SWAP, mc.player);
+
+                    if (debugMessages.isEnable()) Main.sendMessage("32k found in slot " + enchantedSwordIndex);
 
                     stage = 8;
                 }
@@ -399,6 +394,13 @@ public class Dispenser32kRewrite extends Module {
                                 && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 0, 0))).isEmpty()
                                 && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty()
                                 && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(getBlockPosFromDirection(blockPos, direction).add(0, 0, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(getBlockPosFromDirection(blockPos, direction).add(0, 1, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(blockPos.add(0, 0, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(getBlockPosFromDirection(blockPos, direction).add(0, 0, 0))).isEmpty()
+                                && mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(getBlockPosFromDirection(blockPos, direction).add(0, 1, 0))).isEmpty()
                                 && mc.world.getBlockState(blockPos.up()).getBlock() instanceof BlockAir
                                 && (mc.world.getBlockState(blockPos.up().north()).isFullBlock()
                                 || mc.world.getBlockState(blockPos.up().east()).isFullBlock()
@@ -489,6 +491,9 @@ public class Dispenser32kRewrite extends Module {
                             && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, 0, 0))).isEmpty()
                             && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, -1, 0))).isEmpty()
                             && mc.world.getEntitiesWithinAABB(EntityPlayerSP.class, new AxisAlignedBB(blockPos.add(0, -2, 0))).isEmpty()
+                            && mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(blockPos.add(0, 0, 0))).isEmpty()
+                            && mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(blockPos.add(0, -1, 0))).isEmpty()
+                            && mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(blockPos.add(0, -2, 0))).isEmpty()
                             && mc.world.getBlockState(blockPos).getBlock() instanceof BlockAir
                             && (mc.world.getBlockState(blockPos.north()).isFullBlock()
                             || mc.world.getBlockState(blockPos.east()).isFullBlock()

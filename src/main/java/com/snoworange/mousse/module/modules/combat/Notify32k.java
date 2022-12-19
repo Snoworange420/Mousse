@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Notify32k extends Module {
 
-    public ItemStack stack32k;
+    public ItemStack oldStack;
     public ItemStack lastHoldingStack;
 
     public Notify32k() {
@@ -41,9 +41,14 @@ public class Notify32k extends Module {
                 if (!target.getName().equals(mc.getSession().getUsername()) && target.getHealth() > 0 && !target.isDead) {
 
                     ItemStack itemStack = target.inventory.getCurrentItem();
-                    stack32k = itemStack;
 
-                    if (!stack32k.equals(lastHoldingStack)) {
+                    oldStack = itemStack;
+
+                    if (lastHoldingStack == null) return;
+
+                    if (!oldStack.equals(lastHoldingStack)) {
+
+                        if (!InventoryUtils.is32k(oldStack) && !InventoryUtils.is32k(lastHoldingStack)) return;
 
                         if (InventoryUtils.is32k(itemStack)) {
                             Main.sendMessage("[" + this.name + "] " + target.getName() + " is now holding a 32k.");
@@ -51,7 +56,7 @@ public class Notify32k extends Module {
                             Main.sendMessage("[" + this.name + "] " + target.getName() + " is not longer holding a 32k.");
                         }
 
-                        lastHoldingStack = stack32k;
+                        lastHoldingStack = oldStack;
                     }
 
                     lastHoldingStack = target.inventory.getCurrentItem();
