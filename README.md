@@ -1,4 +1,7 @@
 ## Mousse
+
+**Project discontinued**
+
 An advanced utility mod, aimed at use in Minecraft 1.12.2 anarchy servers.
 
 ![minecraft](https://img.shields.io/badge/Minecraft-1.12.2-yellowgreen)
