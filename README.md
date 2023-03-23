@@ -2,9 +2,9 @@
 
 **Project discontinued**
 
-Continued to ![Cranberry](https://github.com/Snoworange420/Cranberry)
+Continued to [Cranberry](https://github.com/Snoworange420/Cranberry)
 
-*MOUSSE CLIENT ITSELF IS THE ONE OF THE MOST SHIT CLIENT THAT EXIST, WITH THE WORST CODE. DONT USE THE MOD!!!!*
+*MOUSSE CLIENT ITSELF IS THE ONE OF THE MOST SHIT SKIDDED CLIENT THAT EXIST, WITH THE WORST CODE. DONT USE THE MOD!!!! (But thanks for 100 downloads :)*
 
 An advanced utility mod, aimed at use in Minecraft 1.12.2 anarchy servers.
 
